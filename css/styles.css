@@ -693,6 +693,13 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); line-height: 1.2; }
 
 /* ===== LEADER CARDS ===== */
 .leadership-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.leadership-grid--detailed { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.leadership-grid--detailed .leader-card { text-align: left; padding: 36px 32px; }
+.leadership-grid--detailed .leader-card .leader-bio { display: block; }
+.leadership-grid--detailed .leader-avatar { margin: 0 auto 20px; }
+@media (max-width: 768px) {
+  .leadership-grid--detailed { grid-template-columns: 1fr; }
+}
 .leader-card {
   background: var(--clr-white); border-radius: 20px;
   padding: 32px 24px; text-align: center;
