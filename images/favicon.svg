@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#1a1a2e"/>
+  <!-- Three AEGIS diamonds arranged in pyramid -->
+  <!-- Top diamond -->
+  <g transform="translate(16,6)" fill="#e8772e">
+    <polygon points="0,-4.5 4.5,0 0,4.5 -4.5,0" opacity="0.9"/>
+    <line x1="-3" y1="-1.5" x2="3" y2="-1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3.8" y1="0" x2="3.8" y2="0" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3" y1="1.5" x2="3" y2="1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+  </g>
+  <!-- Bottom-left diamond -->
+  <g transform="translate(11,15)" fill="#e8772e">
+    <polygon points="0,-4.5 4.5,0 0,4.5 -4.5,0" opacity="0.9"/>
+    <line x1="-3" y1="-1.5" x2="3" y2="-1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3.8" y1="0" x2="3.8" y2="0" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3" y1="1.5" x2="3" y2="1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+  </g>
+  <!-- Bottom-right diamond -->
+  <g transform="translate(21,15)" fill="#e8772e">
+    <polygon points="0,-4.5 4.5,0 0,4.5 -4.5,0" opacity="0.9"/>
+    <line x1="-3" y1="-1.5" x2="3" y2="-1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3.8" y1="0" x2="3.8" y2="0" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3" y1="1.5" x2="3" y2="1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+  </g>
+  <!-- Small bottom diamond -->
+  <g transform="translate(16,24)" fill="#e8772e">
+    <polygon points="0,-4.5 4.5,0 0,4.5 -4.5,0" opacity="0.9"/>
+    <line x1="-3" y1="-1.5" x2="3" y2="-1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3.8" y1="0" x2="3.8" y2="0" stroke="#1a1a2e" stroke-width="0.7"/>
+    <line x1="-3" y1="1.5" x2="3" y2="1.5" stroke="#1a1a2e" stroke-width="0.7"/>
+  </g>
+</svg>

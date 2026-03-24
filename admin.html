@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Manager | AEGIS London</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8772e;
+      --charcoal: #1a1a2e;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #6b7280;
+      --white: #fff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--charcoal); min-height: 100vh; }
+
+    .admin-header {
+      background: var(--charcoal);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--white);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-header h1 span { color: var(--orange); }
+    .admin-header a { color: var(--orange); font-size: 0.85rem; text-decoration: none; }
+    .admin-header a:hover { text-decoration: underline; }
+
+    .admin-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+    }
+    .admin-nav button {
+      background: none;
+      border: none;
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-600);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .admin-nav button.active { color: var(--orange); border-bottom-color: var(--orange); font-weight: 600; }
+    .admin-nav button:hover { color: var(--charcoal); }
+
+    .admin-content { max-width: 900px; margin: 32px auto; padding: 0 32px; }
+
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    .admin-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .admin-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+    .admin-card p.desc {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--charcoal);
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: #d06a28; }
+    .btn-outline { background: none; border: 1px solid var(--gray-200); color: var(--gray-600); }
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+
+    .btn-group { display: flex; gap: 8px; margin-top: 20px; }
+
+    .item-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .item-row:hover { border-color: var(--gray-200); }
+    .item-row .item-info { flex: 1; }
+    .item-row .item-info strong { font-size: 0.9rem; display: block; }
+    .item-row .item-info span { font-size: 0.8rem; color: var(--gray-400); }
+    .item-row .item-actions { display: flex; gap: 6px; }
+    .item-row .item-actions button {
+      background: none;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--gray-600);
+      font-family: 'Inter', sans-serif;
+    }
+    .item-row .item-actions button:hover { border-color: var(--orange); color: var(--orange); }
+    .item-row .item-actions button.delete:hover { border-color: #ef4444; color: #ef4444; }
+
+    .output-area {
+      background: var(--charcoal);
+      color: #a5f3fc;
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--charcoal);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: none;
+      z-index: 9999;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .toast.show { display: flex; align-items: center; gap: 8px; }
+    .toast.success { border-left: 3px solid #10b981; }
+
+    .help-text {
+      background: rgba(232,119,46,0.08);
+      border: 1px solid rgba(232,119,46,0.2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+    .help-text strong { color: var(--charcoal); }
+  </style>
+</head>
+<body>
+
+  <div class="admin-header">
+    <h1>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#e8772e" stroke-width="2" width="22" height="22"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span>AEGIS London</span> Content Manager
+    </h1>
+    <a href="index.html">&larr; Back to Website</a>
+  </div>
+
+  <div class="admin-nav">
+    <button class="active" data-panel="news">News &amp; Press</button>
+    <button data-panel="careers">Careers</button>
+    <button data-panel="team">Team</button>
+    <button data-panel="config">Site Config</button>
+    <button data-panel="export">Export</button>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- NEWS PANEL -->
+    <div class="admin-panel active" id="panel-news">
+      <div class="help-text">
+        <strong>How it works:</strong> Add or edit news articles below. When you're done, go to the <strong>Export</strong> tab to generate the updated config code. Copy it into <code>js/config.js</code> to publish your changes.
+      </div>
+
+      <div class="admin-card">
+        <h3>Current Articles</h3>
+        <p class="desc">Manage your news and press release content.</p>
+        <div class="item-list" id="newsList"></div>
+        <button class="btn btn-primary" onclick="addNewsItem()">+ Add Article</button>
+      </div>
+
+      <div class="admin-card" id="newsForm" style="display:none;">
+        <h3 id="newsFormTitle">New Article</h3>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="newsTitle" placeholder="Article title">
+        </div>
+        <div class="form-group">
+          <label>Summary</label>
+          <textarea id="newsSummary" placeholder="Brief summary (1-2 sentences)"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="text" id="newsDate" placeholder="e.g. March 2026">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="newsCategory">
+              <option value="press">Press Release</option>
+              <option value="insight">Thought Leadership</option>
+              <option value="people">People</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="saveNewsItem()">Save Article</button>
+          <button class="btn btn-outline" onclick="cancelNewsEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAREERS PANEL -->
+    <div class="admin-panel" id="panel-careers">
+      <div class="help-text">
+        <strong>How it works:</strong> Add or edit job listings below. Export updated config from the <strong>Export</strong> tab when ready.
+      </div>
+
+      <div class="admin-card">
+        <h3>Job Listings</h3>
+        <p class="desc">Manage current vacancies.</p>
+        <div class="item-list" id="careersList"></div>
+        <button class="btn btn-primary" onclick="addCareerItem()">+ Add Position</button>
+      </div>
+
+      <div class="admin-card" id="careerForm" style="display:none;">
+        <h3 id="careerFormTitle">New Position</h3>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" id="careerTitle" placeholder="e.g. Senior Property Underwriter">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="careerLocation" placeholder="e.g. London">
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <input type="text" id="careerDept" placeholder="e.g. Underwriting">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="careerType">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+          </select>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="saveCareerItem()">Save Position</button>
+          <button class="btn btn-outline" onclick="cancelCareerEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM PANEL -->
+    <div class="admin-panel" id="panel-team">
+      <div class="help-text">
+        <strong>How it works:</strong> Edit team member details below. Changes affect the Management Team page and homepage leadership section.
+      </div>
+
+      <div class="admin-card">
+        <h3>Management Team</h3>
+        <p class="desc">Edit team members displayed on the site.</p>
+        <div class="item-list" id="teamList"></div>
+        <button class="btn btn-primary" onclick="addTeamMember()">+ Add Team Member</button>
+      </div>
+
+      <div class="admin-card" id="teamForm" style="display:none;">
+        <h3 id="teamFormTitle">New Team Member</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="teamName" placeholder="e.g. Alex Powell">
+          </div>
+          <div class="form-group">
+            <label>Initials</label>
+            <input type="text" id="teamInitials" placeholder="e.g. AP" maxlength="3">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" id="teamTitle" placeholder="e.g. Chief Executive Officer">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="saveTeamMember()">Save Member</button>
+          <button class="btn btn-outline" onclick="cancelTeamEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIG PANEL -->
+    <div class="admin-panel" id="panel-config">
+      <div class="admin-card">
+        <h3>Brand &amp; Contact</h3>
+        <p class="desc">Edit core branding and contact information.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="cfgName" placeholder="AEGIS London">
+          </div>
+          <div class="form-group">
+            <label>Tagline</label>
+            <input type="text" id="cfgTagline" placeholder="A Different Kind of Lloyd's Syndicate">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="cfgPhone" placeholder="+44 (0) 20 7856 7856">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="cfgEmail" placeholder="enquiries@aegislondon.co.uk">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>LinkedIn URL</label>
+          <input type="url" id="cfgLinkedIn" placeholder="https://www.linkedin.com/company/aegis-london/">
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Key Stats</h3>
+        <p class="desc">Update headline figures displayed across the site.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GWP (display)</label>
+            <input type="text" id="cfgGwp" placeholder="$1.7B+">
+          </div>
+          <div class="form-group">
+            <label>Profit (display)</label>
+            <input type="text" id="cfgProfit" placeholder="$391M">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Combined Ratio</label>
+            <input type="text" id="cfgRatio" placeholder="72.9%">
+          </div>
+          <div class="form-group">
+            <label>Copyright Text</label>
+            <input type="text" id="cfgCopyright" placeholder="&copy; 2026 AEGIS London. All rights reserved.">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT PANEL -->
+    <div class="admin-panel" id="panel-export">
+      <div class="help-text">
+        <strong>How to publish changes:</strong>
+        <ol style="margin-top: 8px; padding-left: 20px;">
+          <li>Make your changes in the tabs above</li>
+          <li>Click <strong>Generate Config</strong> below</li>
+          <li>Copy the generated code</li>
+          <li>Open <code>js/config.js</code> in a text editor</li>
+          <li>Replace the relevant sections with the new code</li>
+          <li>Save the file and refresh the website</li>
+        </ol>
+      </div>
+
+      <div class="admin-card">
+        <h3>Generate Updated Config</h3>
+        <p class="desc">This generates the JavaScript configuration code based on your edits above.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="generateExport('news')">Export News Config</button>
+          <button class="btn btn-primary" onclick="generateExport('careers')">Export Careers Config</button>
+          <button class="btn btn-primary" onclick="generateExport('team')">Export Team Config</button>
+          <button class="btn btn-outline" onclick="generateExport('all')">Export Full Config</button>
+        </div>
+        <div class="output-area" id="exportOutput" style="display:none;"></div>
+        <div class="btn-group" id="copyBtnGroup" style="display:none;">
+          <button class="btn btn-outline" onclick="copyExport()">Copy to Clipboard</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script>
+    // ===== STATE =====
+    const C = window.SITE_CONFIG || {};
+    let newsItems = [...(C.news || [])];
+    let careerItems = [...(C.careers || [])];
+    let teamItems = [...(C.team || [])];
+    let editingIndex = -1;
+
+    // ===== TABS =====
+    document.querySelectorAll('.admin-nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+      });
+    });
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show success';
+      setTimeout(() => t.className = 'toast', 2500);
+    }
+
+    // ===== NEWS =====
+    function renderNews() {
+      const list = document.getElementById('newsList');
+      if (newsItems.length === 0) {
+        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No articles yet.</p>';
+        return;
+      }
+      list.innerHTML = newsItems.map((item, i) => `
+        <div class="item-row">
+          <div class="item-info">
+            <strong>${item.title}</strong>
+            <span>${item.date} &middot; ${item.category}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick="editNewsItem(${i})">Edit</button>
+            <button class="delete" onclick="deleteNewsItem(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function addNewsItem() {
+      editingIndex = -1;
+      document.getElementById('newsFormTitle').textContent = 'New Article';
+      document.getElementById('newsTitle').value = '';
+      document.getElementById('newsSummary').value = '';
+      document.getElementById('newsDate').value = '';
+      document.getElementById('newsCategory').value = 'press';
+      document.getElementById('newsForm').style.display = '';
+    }
+    function editNewsItem(i) {
+      editingIndex = i;
+      const item = newsItems[i];
+      document.getElementById('newsFormTitle').textContent = 'Edit Article';
+      document.getElementById('newsTitle').value = item.title;
+      document.getElementById('newsSummary').value = item.summary;
+      document.getElementById('newsDate').value = item.date;
+      document.getElementById('newsCategory').value = item.category;
+      document.getElementById('newsForm').style.display = '';
+    }
+    function saveNewsItem() {
+      const item = {
+        title: document.getElementById('newsTitle').value,
+        summary: document.getElementById('newsSummary').value,
+        date: document.getElementById('newsDate').value,
+        category: document.getElementById('newsCategory').value,
+      };
+      if (!item.title) { alert('Title is required'); return; }
+      if (editingIndex >= 0) { newsItems[editingIndex] = item; } else { newsItems.unshift(item); }
+      document.getElementById('newsForm').style.display = 'none';
+      renderNews();
+      showToast('Article saved');
+    }
+    function deleteNewsItem(i) {
+      if (confirm('Delete "' + newsItems[i].title + '"?')) {
+        newsItems.splice(i, 1);
+        renderNews();
+        showToast('Article deleted');
+      }
+    }
+    function cancelNewsEdit() { document.getElementById('newsForm').style.display = 'none'; }
+
+    // ===== CAREERS =====
+    function renderCareers() {
+      const list = document.getElementById('careersList');
+      if (careerItems.length === 0) {
+        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No positions listed.</p>';
+        return;
+      }
+      list.innerHTML = careerItems.map((item, i) => `
+        <div class="item-row">
+          <div class="item-info">
+            <strong>${item.title}</strong>
+            <span>${item.location} &middot; ${item.dept} &middot; ${item.type}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick="editCareerItem(${i})">Edit</button>
+            <button class="delete" onclick="deleteCareerItem(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function addCareerItem() {
+      editingIndex = -1;
+      document.getElementById('careerFormTitle').textContent = 'New Position';
+      document.getElementById('careerTitle').value = '';
+      document.getElementById('careerLocation').value = 'London';
+      document.getElementById('careerDept').value = '';
+      document.getElementById('careerType').value = 'Full-time';
+      document.getElementById('careerForm').style.display = '';
+    }
+    function editCareerItem(i) {
+      editingIndex = i;
+      const item = careerItems[i];
+      document.getElementById('careerFormTitle').textContent = 'Edit Position';
+      document.getElementById('careerTitle').value = item.title;
+      document.getElementById('careerLocation').value = item.location;
+      document.getElementById('careerDept').value = item.dept;
+      document.getElementById('careerType').value = item.type;
+      document.getElementById('careerForm').style.display = '';
+    }
+    function saveCareerItem() {
+      const item = {
+        title: document.getElementById('careerTitle').value,
+        location: document.getElementById('careerLocation').value,
+        dept: document.getElementById('careerDept').value,
+        type: document.getElementById('careerType').value,
+      };
+      if (!item.title) { alert('Job title is required'); return; }
+      if (editingIndex >= 0) { careerItems[editingIndex] = item; } else { careerItems.push(item); }
+      document.getElementById('careerForm').style.display = 'none';
+      renderCareers();
+      showToast('Position saved');
+    }
+    function deleteCareerItem(i) {
+      if (confirm('Delete "' + careerItems[i].title + '"?')) {
+        careerItems.splice(i, 1);
+        renderCareers();
+        showToast('Position deleted');
+      }
+    }
+    function cancelCareerEdit() { document.getElementById('careerForm').style.display = 'none'; }
+
+    // ===== TEAM =====
+    function renderTeam() {
+      const list = document.getElementById('teamList');
+      if (teamItems.length === 0) {
+        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No team members.</p>';
+        return;
+      }
+      list.innerHTML = teamItems.map((item, i) => `
+        <div class="item-row">
+          <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,119,46,0.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:#e8772e;">${item.initials}</div>
+          <div class="item-info">
+            <strong>${item.name}</strong>
+            <span>${item.title}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick="editTeamMember(${i})">Edit</button>
+            <button class="delete" onclick="deleteTeamMember(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function addTeamMember() {
+      editingIndex = -1;
+      document.getElementById('teamFormTitle').textContent = 'New Team Member';
+      document.getElementById('teamName').value = '';
+      document.getElementById('teamInitials').value = '';
+      document.getElementById('teamTitle').value = '';
+      document.getElementById('teamForm').style.display = '';
+    }
+    function editTeamMember(i) {
+      editingIndex = i;
+      const item = teamItems[i];
+      document.getElementById('teamFormTitle').textContent = 'Edit Team Member';
+      document.getElementById('teamName').value = item.name;
+      document.getElementById('teamInitials').value = item.initials;
+      document.getElementById('teamTitle').value = item.title;
+      document.getElementById('teamForm').style.display = '';
+    }
+    function saveTeamMember() {
+      const item = {
+        name: document.getElementById('teamName').value,
+        initials: document.getElementById('teamInitials').value,
+        title: document.getElementById('teamTitle').value,
+      };
+      if (!item.name) { alert('Name is required'); return; }
+      if (!item.initials) item.initials = item.name.split(' ').map(w => w[0]).join('').toUpperCase();
+      if (editingIndex >= 0) { teamItems[editingIndex] = item; } else { teamItems.push(item); }
+      document.getElementById('teamForm').style.display = 'none';
+      renderTeam();
+      showToast('Team member saved');
+    }
+    function deleteTeamMember(i) {
+      if (confirm('Remove "' + teamItems[i].name + '"?')) {
+        teamItems.splice(i, 1);
+        renderTeam();
+        showToast('Team member removed');
+      }
+    }
+    function cancelTeamEdit() { document.getElementById('teamForm').style.display = 'none'; }
+
+    // ===== CONFIG FIELDS =====
+    function loadConfig() {
+      document.getElementById('cfgName').value = C.brand?.name || '';
+      document.getElementById('cfgTagline').value = C.brand?.tagline || '';
+      document.getElementById('cfgPhone').value = C.contact?.phone || '';
+      document.getElementById('cfgEmail').value = C.contact?.email || '';
+      document.getElementById('cfgLinkedIn').value = C.brand?.linkedIn || '';
+      document.getElementById('cfgGwp').value = C.stats?.gwp || '';
+      document.getElementById('cfgProfit').value = C.stats?.profit || '';
+      document.getElementById('cfgRatio').value = C.stats?.combinedRatio || '';
+      document.getElementById('cfgCopyright').value = C.legal?.copyright || '';
+    }
+
+    // ===== EXPORT =====
+    function generateExport(section) {
+      const output = document.getElementById('exportOutput');
+      const copyBtn = document.getElementById('copyBtnGroup');
+      let code = '';
+
+      if (section === 'news' || section === 'all') {
+        code += '  // NEWS\n  news: [\n';
+        code += newsItems.map(n =>
+          `    {\n      title:    "${n.title}",\n      summary:  "${n.summary}",\n      date:     "${n.date}",\n      category: "${n.category}",\n    }`
+        ).join(',\n');
+        code += '\n  ],\n\n';
+      }
+      if (section === 'careers' || section === 'all') {
+        code += '  // CAREERS\n  careers: [\n';
+        code += careerItems.map(c =>
+          `    { title: "${c.title}", location: "${c.location}", dept: "${c.dept}", type: "${c.type}" }`
+        ).join(',\n');
+        code += '\n  ],\n\n';
+      }
+      if (section === 'team' || section === 'all') {
+        code += '  // TEAM\n  team: [\n';
+        code += teamItems.map(t =>
+          `    { name: "${t.name}", initials: "${t.initials}", title: "${t.title}" }`
+        ).join(',\n');
+        code += '\n  ],\n\n';
+      }
+      if (section === 'all') {
+        code += `  // BRAND\n  brand: {\n    name: "${document.getElementById('cfgName').value}",\n    tagline: "${document.getElementById('cfgTagline').value}",\n    linkedIn: "${document.getElementById('cfgLinkedIn').value}",\n  },\n\n`;
+        code += `  // CONTACT\n  contact: {\n    phone: "${document.getElementById('cfgPhone').value}",\n    email: "${document.getElementById('cfgEmail').value}",\n  },\n\n`;
+        code += `  // STATS\n  stats: {\n    gwp: "${document.getElementById('cfgGwp').value}",\n    profit: "${document.getElementById('cfgProfit').value}",\n    combinedRatio: "${document.getElementById('cfgRatio').value}",\n  },\n`;
+      }
+
+      output.textContent = code;
+      output.style.display = '';
+      copyBtn.style.display = '';
+    }
+
+    function copyExport() {
+      const text = document.getElementById('exportOutput').textContent;
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+    }
+
+    // ===== INIT =====
+    renderNews();
+    renderCareers();
+    renderTeam();
+    loadConfig();
+  </script>
+</body>
+</html>
