@@ -252,7 +252,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Date</label>
-            <input type="text" id="newsDate" placeholder="e.g. March 2026">
+            <input type="text" id="newsDate" placeholder="e.g. 19 March 2026">
           </div>
           <div class="form-group">
             <label>Category</label>
@@ -262,6 +262,26 @@
               <option value="people">People</option>
             </select>
           </div>
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="newsImageUrl" placeholder="https://aegislondon.co.uk/content/dam/...">
+          <small style="color:var(--gray-400);font-size:0.75rem;">Paste an image URL. Images from aegislondon.co.uk or any public URL.</small>
+        </div>
+        <div class="form-group">
+          <label>External Link (optional)</label>
+          <input type="url" id="newsExternalUrl" placeholder="https://aegislondon.co.uk/about-us/press-releases/...">
+        </div>
+        <div class="form-group">
+          <label>Full Article Body (HTML)</label>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertTag('b')"><b>B</b></button>
+            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertTag('em')"><em>I</em></button>
+            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="wrapParagraph()">&#182; P</button>
+            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertList()">&#8226; List</button>
+          </div>
+          <textarea id="newsBody" placeholder="<p>Full article content here...</p>" style="min-height:160px;font-family:'Courier New',monospace;font-size:0.8rem;"></textarea>
+          <small style="color:var(--gray-400);font-size:0.75rem;">Use HTML tags: &lt;p&gt;, &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;, etc. This appears in the popup modal.</small>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="saveNewsItem()">Save Article</button>
@@ -343,6 +363,14 @@
           <label>Job Title</label>
           <input type="text" id="teamTitle" placeholder="e.g. Chief Executive Officer">
         </div>
+        <div class="form-group">
+          <label>Photo URL</label>
+          <input type="url" id="teamPhotoUrl" placeholder="https://aegislondon.co.uk/content/dam/aegis-london/exec-portraits/...">
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea id="teamBio" placeholder="Brief biography..." style="min-height:100px;"></textarea>
+        </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="saveTeamMember()">Save Member</button>
           <button class="btn btn-outline" onclick="cancelTeamEdit()">Cancel</button>
@@ -422,6 +450,17 @@
       </div>
 
       <div class="admin-card">
+        <h3>Auto-Save Status</h3>
+        <p class="desc">Your changes are automatically saved to your browser. They persist across page reloads.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="saveToLocalStorage()">Save Now</button>
+          <button class="btn btn-outline" onclick="clearLocalStorage()">Clear Saved Data</button>
+          <button class="btn btn-outline" onclick="importFromJson()">Import JSON</button>
+        </div>
+        <p id="saveStatus" style="font-size:0.8rem;color:var(--gray-400);margin-top:8px;"></p>
+      </div>
+
+      <div class="admin-card">
         <h3>Generate Updated Config</h3>
         <p class="desc">This generates the JavaScript configuration code based on your edits above.</p>
         <div class="btn-group">
@@ -433,6 +472,15 @@
         <div class="output-area" id="exportOutput" style="display:none;"></div>
         <div class="btn-group" id="copyBtnGroup" style="display:none;">
           <button class="btn btn-outline" onclick="copyExport()">Copy to Clipboard</button>
+          <button class="btn btn-outline" onclick="downloadExport()">Download as File</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Export as JSON</h3>
+        <p class="desc">Download all content as a JSON file for backup or transfer to another instance.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="downloadJson()">Download JSON</button>
         </div>
       </div>
     </div>
@@ -441,14 +489,28 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Scroll Progress -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Page Loader -->
+  <div class="page-loader"></div>
+
   <script src="js/config.js"></script>
   <script>
-    // ===== STATE =====
+    // ===== STATE (load from localStorage first, fallback to config.js) =====
     const C = window.SITE_CONFIG || {};
-    let newsItems = [...(C.news || [])];
-    let careerItems = [...(C.careers || [])];
-    let teamItems = [...(C.team || [])];
+    const saved = JSON.parse(localStorage.getItem('aegis-admin') || 'null');
+    let newsItems = saved?.news || [...(C.news || [])];
+    let careerItems = saved?.careers || [...(C.careers || [])];
+    let teamItems = saved?.team || [...(C.team || [])];
     let editingIndex = -1;
+
+    // Auto-save on every change
+    function autoSave() {
+      localStorage.setItem('aegis-admin', JSON.stringify({ news: newsItems, careers: careerItems, team: teamItems }));
+      const status = document.getElementById('saveStatus');
+      if (status) status.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
+    }
 
     // ===== TABS =====
     document.querySelectorAll('.admin-nav button').forEach(btn => {
@@ -477,9 +539,10 @@
       }
       list.innerHTML = newsItems.map((item, i) => `
         <div class="item-row">
+          ${item.imageUrl ? '<img src="' + item.imageUrl + '" style="width:48px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;" alt="">' : ''}
           <div class="item-info">
             <strong>${item.title}</strong>
-            <span>${item.date} &middot; ${item.category}</span>
+            <span>${item.date} &middot; ${item.category}${item.body ? ' &middot; Has body content' : ''}</span>
           </div>
           <div class="item-actions">
             <button onclick="editNewsItem(${i})">Edit</button>
@@ -495,6 +558,9 @@
       document.getElementById('newsSummary').value = '';
       document.getElementById('newsDate').value = '';
       document.getElementById('newsCategory').value = 'press';
+      document.getElementById('newsImageUrl').value = '';
+      document.getElementById('newsExternalUrl').value = '';
+      document.getElementById('newsBody').value = '';
       document.getElementById('newsForm').style.display = '';
     }
     function editNewsItem(i) {
@@ -505,6 +571,9 @@
       document.getElementById('newsSummary').value = item.summary;
       document.getElementById('newsDate').value = item.date;
       document.getElementById('newsCategory').value = item.category;
+      document.getElementById('newsImageUrl').value = item.imageUrl || '';
+      document.getElementById('newsExternalUrl').value = item.externalUrl || '';
+      document.getElementById('newsBody').value = item.body || '';
       document.getElementById('newsForm').style.display = '';
     }
     function saveNewsItem() {
@@ -513,17 +582,42 @@
         summary: document.getElementById('newsSummary').value,
         date: document.getElementById('newsDate').value,
         category: document.getElementById('newsCategory').value,
+        imageUrl: document.getElementById('newsImageUrl').value,
+        externalUrl: document.getElementById('newsExternalUrl').value,
+        body: document.getElementById('newsBody').value,
       };
       if (!item.title) { alert('Title is required'); return; }
       if (editingIndex >= 0) { newsItems[editingIndex] = item; } else { newsItems.unshift(item); }
       document.getElementById('newsForm').style.display = 'none';
       renderNews();
+      autoSave();
       showToast('Article saved');
+    }
+    // Rich text helpers
+    function insertTag(tag) {
+      const ta = document.getElementById('newsBody');
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      const selected = ta.value.substring(start, end);
+      ta.value = ta.value.substring(0, start) + '<' + tag + '>' + selected + '</' + tag + '>' + ta.value.substring(end);
+      ta.focus();
+    }
+    function wrapParagraph() {
+      const ta = document.getElementById('newsBody');
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      const selected = ta.value.substring(start, end) || 'Your text here';
+      ta.value = ta.value.substring(0, start) + '<p>' + selected + '</p>\n' + ta.value.substring(end);
+      ta.focus();
+    }
+    function insertList() {
+      const ta = document.getElementById('newsBody');
+      ta.value += '\n<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n</ul>\n';
+      ta.focus();
     }
     function deleteNewsItem(i) {
       if (confirm('Delete "' + newsItems[i].title + '"?')) {
         newsItems.splice(i, 1);
         renderNews();
+        autoSave();
         showToast('Article deleted');
       }
     }
@@ -579,12 +673,14 @@
       if (editingIndex >= 0) { careerItems[editingIndex] = item; } else { careerItems.push(item); }
       document.getElementById('careerForm').style.display = 'none';
       renderCareers();
+      autoSave();
       showToast('Position saved');
     }
     function deleteCareerItem(i) {
       if (confirm('Delete "' + careerItems[i].title + '"?')) {
         careerItems.splice(i, 1);
         renderCareers();
+        autoSave();
         showToast('Position deleted');
       }
     }
@@ -599,10 +695,10 @@
       }
       list.innerHTML = teamItems.map((item, i) => `
         <div class="item-row">
-          <div style="width:36px;height:36px;border-radius:8px;background:rgba(232,119,46,0.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:#e8772e;">${item.initials}</div>
+          ${item.photoUrl ? '<img src="' + item.photoUrl + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;flex-shrink:0;" alt="">' : '<div style="width:40px;height:40px;border-radius:50%;background:rgba(232,119,46,0.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:#e8772e;flex-shrink:0;">' + item.initials + '</div>'}
           <div class="item-info">
             <strong>${item.name}</strong>
-            <span>${item.title}</span>
+            <span>${item.title}${item.bio ? ' &middot; Has bio' : ''}</span>
           </div>
           <div class="item-actions">
             <button onclick="editTeamMember(${i})">Edit</button>
@@ -617,6 +713,8 @@
       document.getElementById('teamName').value = '';
       document.getElementById('teamInitials').value = '';
       document.getElementById('teamTitle').value = '';
+      document.getElementById('teamPhotoUrl').value = '';
+      document.getElementById('teamBio').value = '';
       document.getElementById('teamForm').style.display = '';
     }
     function editTeamMember(i) {
@@ -626,6 +724,8 @@
       document.getElementById('teamName').value = item.name;
       document.getElementById('teamInitials').value = item.initials;
       document.getElementById('teamTitle').value = item.title;
+      document.getElementById('teamPhotoUrl').value = item.photoUrl || '';
+      document.getElementById('teamBio').value = item.bio || '';
       document.getElementById('teamForm').style.display = '';
     }
     function saveTeamMember() {
@@ -633,18 +733,22 @@
         name: document.getElementById('teamName').value,
         initials: document.getElementById('teamInitials').value,
         title: document.getElementById('teamTitle').value,
+        photoUrl: document.getElementById('teamPhotoUrl').value,
+        bio: document.getElementById('teamBio').value,
       };
       if (!item.name) { alert('Name is required'); return; }
       if (!item.initials) item.initials = item.name.split(' ').map(w => w[0]).join('').toUpperCase();
       if (editingIndex >= 0) { teamItems[editingIndex] = item; } else { teamItems.push(item); }
       document.getElementById('teamForm').style.display = 'none';
       renderTeam();
+      autoSave();
       showToast('Team member saved');
     }
     function deleteTeamMember(i) {
       if (confirm('Remove "' + teamItems[i].name + '"?')) {
         teamItems.splice(i, 1);
         renderTeam();
+        autoSave();
         showToast('Team member removed');
       }
     }
@@ -671,9 +775,13 @@
 
       if (section === 'news' || section === 'all') {
         code += '  // NEWS\n  news: [\n';
-        code += newsItems.map(n =>
-          `    {\n      title:    "${n.title}",\n      summary:  "${n.summary}",\n      date:     "${n.date}",\n      category: "${n.category}",\n    }`
-        ).join(',\n');
+        code += newsItems.map(n => {
+          let fields = `      title:       "${n.title}",\n      summary:     "${n.summary}",\n      date:        "${n.date}",\n      category:    "${n.category}",`;
+          if (n.imageUrl) fields += `\n      imageUrl:    "${n.imageUrl}",`;
+          if (n.externalUrl) fields += `\n      externalUrl: "${n.externalUrl}",`;
+          if (n.body) fields += `\n      body:        ${JSON.stringify(n.body)},`;
+          return `    {\n${fields}\n    }`;
+        }).join(',\n');
         code += '\n  ],\n\n';
       }
       if (section === 'careers' || section === 'all') {
@@ -685,9 +793,12 @@
       }
       if (section === 'team' || section === 'all') {
         code += '  // TEAM\n  team: [\n';
-        code += teamItems.map(t =>
-          `    { name: "${t.name}", initials: "${t.initials}", title: "${t.title}" }`
-        ).join(',\n');
+        code += teamItems.map(t => {
+          let fields = `name: "${t.name}", initials: "${t.initials}", title: "${t.title}"`;
+          if (t.photoUrl) fields += `, photoUrl: "${t.photoUrl}"`;
+          if (t.bio) fields += `, bio: ${JSON.stringify(t.bio)}`;
+          return `    { ${fields} }`;
+        }).join(',\n');
         code += '\n  ],\n\n';
       }
       if (section === 'all') {
@@ -705,12 +816,75 @@
       const text = document.getElementById('exportOutput').textContent;
       navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
     }
+    function downloadExport() {
+      const text = document.getElementById('exportOutput').textContent;
+      const blob = new Blob([text], { type: 'text/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'config-export.js';
+      a.click();
+      showToast('Download started');
+    }
+
+    // ===== LOCALSTORAGE =====
+    function saveToLocalStorage() {
+      autoSave();
+      showToast('All changes saved to browser');
+    }
+    function clearLocalStorage() {
+      if (confirm('Clear all saved data? This will revert to the original config.')) {
+        localStorage.removeItem('aegis-admin');
+        location.reload();
+      }
+    }
+    function importFromJson() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const data = JSON.parse(ev.target.result);
+            if (data.news) { newsItems = data.news; renderNews(); }
+            if (data.careers) { careerItems = data.careers; renderCareers(); }
+            if (data.team) { teamItems = data.team; renderTeam(); }
+            autoSave();
+            showToast('Data imported successfully');
+          } catch (err) {
+            alert('Invalid JSON file');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+    function downloadJson() {
+      const data = { news: newsItems, careers: careerItems, team: teamItems };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'aegis-london-content-' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      showToast('JSON download started');
+    }
+
+    // ===== UPDATE RENDER WITH IMAGES =====
+    // Override renderNews to show image thumbnails
+    const originalRenderNews = renderNews;
 
     // ===== INIT =====
     renderNews();
     renderCareers();
     renderTeam();
     loadConfig();
+    // Show save status if data exists
+    if (saved) {
+      const status = document.getElementById('saveStatus');
+      if (status) status.textContent = 'Loaded from saved browser data.';
+    }
   </script>
 </body>
 </html>
