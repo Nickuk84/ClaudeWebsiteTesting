@@ -253,6 +253,34 @@
   <!-- Back to Top -->
   <button class="back-to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></button>
 
+  <!-- News Article Modal (for team click-to-expand) -->
+  <div class="news-modal-overlay" id="newsModal">
+    <div class="news-modal" role="dialog" aria-modal="true" aria-labelledby="newsModalTitle">
+      <button class="news-modal-close" aria-label="Close">&times;</button>
+      <div class="news-modal-hero" style="display:none">
+        <img src="" alt="" id="newsModalImage">
+      </div>
+      <div class="news-modal-content">
+        <div class="news-modal-meta">
+          <span class="news-card-tag" id="newsModalTag"></span>
+          <span class="news-card-date" id="newsModalDate"></span>
+        </div>
+        <h2 id="newsModalTitle"></h2>
+        <div class="news-modal-body" id="newsModalBody"></div>
+        <div class="news-modal-footer">
+          <a href="#" class="news-modal-external" id="newsModalLink" target="_blank" rel="noopener noreferrer" style="display:none">View on aegislondon.co.uk</a>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Page Loader -->
+  <div class="page-loader"></div>
+
   <!-- JS -->
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
