@@ -1460,6 +1460,249 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); line-height: 1.2; }
   .search-modal { padding-top: 10vh; padding: 10vh 16px 0; }
 }
 
+/* ===== NEWS ARTICLE MODAL ===== */
+.news-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 10001;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+  align-items: center; justify-content: center;
+  padding: 24px; opacity: 0;
+  transition: opacity 0.3s var(--ease-out-expo);
+}
+.news-modal-overlay.active { display: flex; opacity: 1; }
+.news-modal {
+  background: var(--clr-white); border-radius: 24px;
+  max-width: 800px; width: 100%; max-height: 90vh;
+  overflow-y: auto; position: relative;
+  transform: scale(0.95) translateY(20px);
+  animation: modalIn 0.4s var(--ease-spring) forwards;
+  box-shadow: 0 32px 100px rgba(0,0,0,0.4);
+}
+@keyframes modalIn {
+  to { transform: scale(1) translateY(0); }
+}
+.news-modal-overlay.closing .news-modal {
+  animation: modalOut 0.25s ease-in forwards;
+}
+@keyframes modalOut {
+  to { transform: scale(0.95) translateY(20px); opacity: 0; }
+}
+.news-modal-close {
+  position: absolute; top: 16px; right: 16px; z-index: 10;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+  border: 1px solid var(--clr-gray-200); cursor: pointer;
+  font-size: 1.5rem; color: var(--clr-gray-600);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; line-height: 1;
+}
+.news-modal-close:hover {
+  background: var(--clr-charcoal); color: #fff; border-color: transparent;
+}
+.news-modal-hero {
+  width: 100%; aspect-ratio: 21/9; overflow: hidden;
+  position: relative; background: linear-gradient(135deg, var(--clr-charcoal), var(--clr-navy));
+}
+.news-modal-hero img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.news-modal-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 80px; background: linear-gradient(transparent, var(--clr-white));
+}
+.news-modal-content {
+  padding: 32px 40px 40px;
+}
+.news-modal-meta {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.news-modal-content h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700;
+  color: var(--clr-charcoal); margin-bottom: 20px;
+  letter-spacing: -0.02em; line-height: 1.3;
+}
+.news-modal-body {
+  font-size: 1rem; color: var(--clr-gray-600); line-height: 1.8;
+}
+.news-modal-body p { margin-bottom: 16px; }
+.news-modal-body strong { color: var(--clr-charcoal); }
+.news-modal-body ul { padding-left: 20px; margin-bottom: 16px; list-style: disc; }
+.news-modal-body li { margin-bottom: 8px; }
+.news-modal-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid var(--clr-gray-100);
+}
+.news-modal-external {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.9rem; font-weight: 600; color: var(--clr-orange);
+  transition: gap 0.3s;
+}
+.news-modal-external:hover { gap: 12px; }
+.news-modal-share {
+  display: flex; gap: 8px;
+}
+.news-modal-share button {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--clr-offwhite); border: 1px solid var(--clr-gray-100);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: var(--clr-gray-600);
+}
+.news-modal-share button:hover {
+  background: var(--clr-orange); color: #fff; border-color: transparent;
+}
+/* Modal scrollbar */
+.news-modal::-webkit-scrollbar { width: 6px; }
+.news-modal::-webkit-scrollbar-track { background: transparent; }
+.news-modal::-webkit-scrollbar-thumb { background: var(--clr-gray-200); border-radius: 3px; }
+
+@media (max-width: 768px) {
+  .news-modal-overlay { padding: 0; align-items: flex-end; }
+  .news-modal {
+    border-radius: 24px 24px 0 0; max-height: 95vh;
+    animation: modalSlideUp 0.4s var(--ease-spring) forwards;
+  }
+  @keyframes modalSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .news-modal-content { padding: 24px 20px 32px; }
+}
+
+/* ===== SCROLL PROGRESS BAR ===== */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 10002;
+  background: linear-gradient(90deg, var(--clr-orange), var(--clr-orange-light));
+  width: 0%; transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+/* ===== PAGE LOAD ANIMATION ===== */
+.page-loader {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 99999;
+  background: linear-gradient(90deg, transparent, var(--clr-orange), transparent);
+  animation: pageLoad 0.8s var(--ease-out-expo) forwards;
+}
+@keyframes pageLoad {
+  0% { transform: translateX(-100%); opacity: 1; }
+  80% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+
+/* ===== CREATIVE LEADER CARD HOVER EFFECTS ===== */
+.leader-card {
+  perspective: 800px;
+}
+.leader-card--full {
+  position: relative; overflow: visible;
+}
+.leader-card--full .leader-avatar {
+  width: 120px; height: 120px;
+  transition: transform 0.5s var(--ease-spring), box-shadow 0.5s;
+}
+.leader-card--full:hover .leader-avatar {
+  transform: scale(1.08);
+  box-shadow: 0 12px 40px rgba(232,119,46,0.25);
+}
+/* Rotating gradient border on hover */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.leader-card:hover .leader-avatar::after {
+  opacity: 1;
+  background: conic-gradient(from var(--border-angle), var(--clr-orange), rgba(255,152,0,0.3), var(--clr-orange)) border-box;
+  animation: rotateBorder 3s linear infinite;
+}
+@keyframes rotateBorder {
+  to { --border-angle: 360deg; }
+}
+
+/* Bio slide-up overlay for compact cards */
+.leader-card:not(.leader-card--full) {
+  position: relative; overflow: hidden;
+}
+.leader-card:not(.leader-card--full)::before {
+  content: attr(data-role);
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 60px 20px 20px;
+  background: linear-gradient(transparent, rgba(26,26,46,0.95));
+  color: rgba(255,255,255,0.85); font-size: 0.8rem;
+  text-align: center; transform: translateY(100%);
+  transition: transform 0.4s var(--ease-out-expo);
+  border-radius: 0 0 20px 20px;
+  pointer-events: none;
+}
+.leader-card:not(.leader-card--full):hover::before {
+  transform: translateY(0);
+}
+
+/* Parallax tilt class */
+.leader-card.tilt-active {
+  transition: transform 0.1s linear;
+}
+
+/* ===== GRADIENT TEXT EFFECT ===== */
+.accent-gradient {
+  background: linear-gradient(135deg, var(--clr-orange), var(--clr-orange-light), var(--clr-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== GLASS MORPHISM CARDS (dark sections) ===== */
+.section--dark .spec-card,
+.section--dark .card,
+.section--dark .feature-item {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(12px);
+  border-color: rgba(255,255,255,0.08);
+}
+.section--dark .spec-card:hover,
+.section--dark .card:hover,
+.section--dark .feature-item:hover {
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* ===== IMAGE BLUR-UP LAZY LOAD ===== */
+.img-lazy {
+  filter: blur(20px); transform: scale(1.05);
+  transition: filter 0.6s, transform 0.6s;
+}
+.img-lazy.loaded {
+  filter: blur(0); transform: scale(1);
+}
+
+/* ===== NEWS CARD ENHANCED HOVER ===== */
+.news-card {
+  cursor: pointer; position: relative;
+}
+.news-card::after {
+  content: ''; position: absolute; inset: -1px;
+  border-radius: 20px; opacity: 0;
+  background: linear-gradient(135deg, rgba(232,119,46,0.15), transparent);
+  transition: opacity 0.3s; pointer-events: none;
+}
+.news-card:hover::after { opacity: 1; }
+.news-card:hover .news-card-image img {
+  transform: scale(1.08);
+}
+.news-card-image img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s var(--ease-out-expo);
+}
+
+/* ===== HERO PARALLAX ===== */
+.hero-orb {
+  will-change: transform;
+}
+
+/* ===== MAGNETIC BUTTON EFFECT ===== */
+.btn-magnetic {
+  transition: transform 0.2s var(--ease-out-expo);
+}
+
 /* ===== PRINT ===== */
 @media print {
   .nav, .footer, .cookie-banner, .back-to-top, .ticker, .nav-toggle,

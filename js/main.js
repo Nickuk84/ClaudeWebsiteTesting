@@ -415,4 +415,193 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== SCROLL PROGRESS BAR =====
+  const scrollProgress = document.getElementById('scrollProgress');
+  if (scrollProgress) {
+    window.addEventListener('scroll', () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = (window.scrollY / docHeight) * 100;
+      scrollProgress.style.width = scrolled + '%';
+    }, { passive: true });
+  }
+
+  // ===== NEWS ARTICLE MODAL =====
+  const newsModal = document.getElementById('newsModal');
+  if (newsModal) {
+    const modalImage = document.getElementById('newsModalImage');
+    const modalTag = document.getElementById('newsModalTag');
+    const modalDate = document.getElementById('newsModalDate');
+    const modalTitle = document.getElementById('newsModalTitle');
+    const modalBody = document.getElementById('newsModalBody');
+    const modalLink = document.getElementById('newsModalLink');
+    const modalClose = newsModal.querySelector('.news-modal-close');
+
+    // Extended article content for modal popups
+    const articleContent = {
+      'AEGIS London Announces Record Full-Year 2025 Results': '<p>AEGIS London has announced record full-year results for the year ending 31 December 2025, with UK GAAP profit of $391m, a 27% increase from 2024\'s $307m.</p><p>The combined ratio of 72.9% reflects continued underwriting discipline and portfolio management across all lines of business.</p><p><strong>Key highlights:</strong></p><ul><li>Gross written premium growth of 12% year-on-year</li><li>Combined ratio of 72.9%, well below the 100% profitability threshold</li><li>Return on capital significantly exceeding market average</li><li>Continued investment in digital trading and technology platforms</li></ul><p>Alex Powell, CEO, commented: "These results demonstrate the strength of our mutual model and the quality of our underwriting team. Our focus on disciplined underwriting, combined with strategic investments in technology and talent, continues to deliver outstanding results for our stakeholders."</p>',
+      'Double Claims Manager Promotion': '<p>AEGIS London has promoted Jenny Macartney and Zoe Hill to Claims Manager, strengthening the claims leadership team.</p><p>Both promotions recognise exceptional performance and leadership in claims handling, contributing to AEGIS London\'s continued top-quartile claims service recognition.</p><p>The claims team has been recognised with the Gracechurch Claims Quality Marque for 10 consecutive years, a testament to the quality and dedication of the team.</p>',
+      'Neil Bayles Appointed Chief Information Officer': '<p>AEGIS London has appointed Neil Bayles to the newly created role of Chief Information Officer, reporting to Chief Operating Officer Marianne Harvey.</p><p>The CIO position has been created to drive technology strategy and digital transformation across the business, reflecting the increasing importance of technology in the Lloyd\'s market.</p><p>Neil brings extensive experience in technology leadership within financial services and will be responsible for all aspects of IT strategy, infrastructure, and digital innovation.</p>',
+      'AEGIS London Responds to LMA Report': '<p>Matthew Yeldham, Chief Underwriting Officer at AEGIS London, has responded to the London Market Association\'s latest industry report.</p><p>The response addresses key themes including market conditions, underwriting discipline, and the evolving role of technology in the London market.</p><p>AEGIS London continues to advocate for sustainable market practices and innovative approaches to risk management.</p>',
+      'Gracechurch Claims Quality Marque for 10th Consecutive Year': '<p>AEGIS London has been awarded the Gracechurch Claims Quality Marque for the 10th consecutive year, maintaining its position in the top quartile for claims service excellence.</p><p>This milestone achievement reflects the consistent quality and responsiveness of the AEGIS London claims team, led by Andrew Gunn, Head of Claims.</p><p><strong>The award recognises excellence in:</strong></p><ul><li>Speed and efficiency of claims handling</li><li>Quality of communication with policyholders and brokers</li><li>Technical expertise and fair settlement practices</li><li>Overall client satisfaction</li></ul>',
+      'Tom Prifti Promoted to E&O Class Underwriter': '<p>AEGIS London has promoted Tom Prifti to the role of Errors & Omissions Class Underwriter, succeeding Martin King.</p><p>Tom brings deep expertise in professional liability underwriting and has been instrumental in growing the E&O portfolio at AEGIS London.</p>',
+      'The Widening Lead-Follow Spectrum': '<p>Matthew Yeldham, CUO at AEGIS London, examines the evolving dynamics of lead and follow underwriting in the Lloyd\'s market.</p><p>The article explores how the traditional binary distinction between lead and follow underwriters is giving way to a more nuanced spectrum, with implications for pricing, capacity deployment, and market efficiency.</p><p>Key themes include the role of data analytics in follow underwriting decisions, the impact of digital trading platforms, and the strategic positioning of syndicates across the lead-follow spectrum.</p>',
+      'Forget Cyber Rate Reductions, Focus on Growth': '<p>Lydia Lambert and Dan Johnson from AEGIS London argue that the cyber insurance market should prioritise sustainable growth over rate competition.</p><p>The article examines current market dynamics, including increasing competition and downward pressure on rates, and makes the case for focusing on portfolio growth and risk selection rather than price-driven strategies.</p>',
+      'Navigating US Casualty Realities': '<p>Charles McDonagh provides insights into the current US casualty landscape and strategies for navigating market challenges.</p><p>The article covers social inflation trends, litigation funding developments, and the implications for London market underwriters writing US casualty business.</p>',
+      'Strategic Digital Partnership with McGill and Partners': '<p>AEGIS London has announced a strategic partnership with McGill and Partners to expand digital trading capabilities.</p><p>The partnership leverages AEGIS London\'s OPAL digital trading platform and McGill\'s distribution network to create new opportunities for efficient, data-driven placement.</p>',
+      'Tom Squires Appointed Head of Distribution and Digital Trading': '<p>Tom Squires has been appointed as Head of Distribution and Digital Trading at AEGIS London.</p><p>In this newly created role, Tom will lead distribution strategy and digital trading initiatives, working closely with the underwriting and technology teams to drive innovation in market access.</p>',
+      'Political &amp; Financial Risk Line Size Increases': '<p>AEGIS London has significantly increased its capacity for political and financial risk products.</p><p>Sovereign non-payment capacity has been increased by 50%, and credit capacity has been doubled to meet growing market demand for these specialist products.</p>',
+      'Sarah Yuile Appointed International Casualty Underwriter': '<p>Sarah Yuile has joined AEGIS London as an International Casualty Underwriter, strengthening the international casualty team.</p><p>Sarah brings extensive experience in casualty underwriting across international markets and will contribute to growing AEGIS London\'s international casualty portfolio.</p>',
+      'Digital Terrorism Product Capacity Doubled to $500m': '<p>AEGIS London has doubled its digital terrorism product capacity to $500m, responding to increasing market demand.</p><p>The expanded capacity is available through the OPAL digital trading platform, enabling efficient placement of terrorism risks for brokers worldwide.</p>',
+      'Full Year Results for 2024: GBP 247m Profit': '<p>AEGIS London has reported strong full-year results for 2024, with a profit of GBP 247m.</p><p>The results reflect consistent underwriting discipline and effective portfolio management across all lines of business, with a combined ratio well below 100%.</p>',
+      'Charity Bare Appointed Chief Risk and Compliance Officer': '<p>Charity Bare has been appointed as Chief Risk and Compliance Officer at AEGIS London.</p><p>Charity brings deep expertise in risk management and regulatory frameworks within the London insurance market, and will lead the risk and compliance function across the organisation.</p>',
+      '$100m Political Violence Consortium Launched': '<p>AEGIS London has launched a new consortium offering $100m capacity for political violence risks across multiple territories.</p><p>The consortium brings together specialist expertise to provide comprehensive coverage for political violence exposures, including terrorism, civil unrest, and politically motivated events.</p>',
+      'Gracechurch Claims Quality Marque for 9th Consecutive Year': '<p>AEGIS London has been awarded the Gracechurch Claims Quality Marque for the ninth consecutive year.</p><p>The continued top quartile recognition reflects the claims team\'s commitment to service excellence and responsiveness in handling complex insurance claims.</p>',
+      'Portfolio Solutions Launched': '<p>AEGIS London has launched its new Portfolio Solutions division, led by Richard Palengat.</p><p>The division expands AEGIS London\'s service offering to clients, providing comprehensive portfolio management, delegated authority arrangements, and bespoke risk solutions.</p>',
+      'Three Colleagues Celebrate 25 Years': '<p>AEGIS London celebrates the remarkable achievement of three colleagues who have each completed 25 years of service, including CEO Alex Powell and Gemma Burns.</p><p>Their combined 75 years of experience represent an extraordinary commitment to the company and the London insurance market.</p>',
+      'OPAL Digital Platform Evolution': '<p>Mark Wilding explores how AEGIS London\'s OPAL platform continues to evolve and reshape digital trading in the Lloyd\'s market.</p><p>The article covers recent platform enhancements, adoption metrics, and the strategic vision for digital trading at AEGIS London.</p>',
+      '60% Follow Market at Lloyd\'s': '<p>Matt Yeldham analyses the structure of the follow market at Lloyd\'s, which represents approximately 60% of total capacity.</p><p>The article examines the implications for syndicate strategy, pricing dynamics, and the role of data and technology in follow underwriting decisions.</p>',
+      'Women in Insurance Awards Finalists': '<p>Grace Hymas, Natalie Skillett, and Louise Daveney from AEGIS London have been recognised as finalists at the Women in Insurance Awards.</p><p>The nominations reflect AEGIS London\'s commitment to diversity and inclusion, and the exceptional contributions of these three professionals to the insurance industry.</p>',
+      'Mentoring Programme': '<p>Katie Wade (CFO) and Eliza Dickie share insights from AEGIS London\'s internal mentoring programme.</p><p>The programme has been instrumental in supporting career development, knowledge sharing, and building connections across the organisation.</p>',
+    };
+
+    function openNewsModal(card) {
+      const title = card.querySelector('h3')?.textContent || '';
+      const summary = card.querySelector('.news-card-body > p')?.textContent || '';
+      const date = card.querySelector('.news-card-date')?.textContent || '';
+      const tag = card.querySelector('.news-card-tag');
+      const img = card.querySelector('.news-card-image img');
+      const link = card.querySelector('.news-read-more');
+
+      modalTitle.textContent = title;
+      modalDate.textContent = date;
+
+      if (tag) {
+        modalTag.textContent = tag.textContent;
+        modalTag.className = 'news-card-tag ' + (tag.classList[1] || '');
+      }
+
+      if (img) {
+        modalImage.src = img.src;
+        modalImage.alt = img.alt;
+        newsModal.querySelector('.news-modal-hero').style.display = '';
+      } else {
+        newsModal.querySelector('.news-modal-hero').style.display = 'none';
+      }
+
+      // Try to find extended content
+      const body = articleContent[title] || '<p>' + summary + '</p>';
+      modalBody.innerHTML = body;
+
+      if (link) {
+        modalLink.href = link.href;
+        modalLink.style.display = '';
+      } else {
+        modalLink.style.display = 'none';
+      }
+
+      document.body.style.overflow = 'hidden';
+      newsModal.classList.add('active');
+      newsModal.classList.remove('closing');
+
+      // Focus trap
+      setTimeout(() => modalClose.focus(), 100);
+    }
+
+    function closeNewsModal() {
+      newsModal.classList.add('closing');
+      setTimeout(() => {
+        newsModal.classList.remove('active', 'closing');
+        document.body.style.overflow = '';
+      }, 250);
+    }
+
+    // Click on news cards opens modal
+    document.querySelectorAll('.news-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Don't intercept if clicking the external link directly with modifier
+        if (e.target.closest('.news-read-more') && (e.ctrlKey || e.metaKey)) return;
+        e.preventDefault();
+        openNewsModal(card);
+      });
+
+      // Make cards keyboard accessible
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openNewsModal(card);
+        }
+      });
+    });
+
+    modalClose.addEventListener('click', closeNewsModal);
+    newsModal.addEventListener('click', (e) => {
+      if (e.target === newsModal) closeNewsModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && newsModal.classList.contains('active')) closeNewsModal();
+    });
+  }
+
+  // ===== HERO PARALLAX ON SCROLL =====
+  const heroOrbs = document.querySelectorAll('.hero-orb');
+  if (heroOrbs.length > 0) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      heroOrbs.forEach((orb, i) => {
+        const rate = (i + 1) * 0.15;
+        orb.style.transform = `translateY(${scrollY * rate}px)`;
+      });
+    }, { passive: true });
+  }
+
+  // ===== LEADER CARD PARALLAX TILT =====
+  document.querySelectorAll('.leader-card--full').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  // ===== MAGNETIC BUTTON EFFECT =====
+  document.querySelectorAll('.btn-primary, .nav-cta').forEach(btn => {
+    btn.classList.add('btn-magnetic');
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px) translateY(-2px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+
+  // ===== IMAGE LAZY LOAD WITH BLUR-UP =====
+  document.querySelectorAll('.img-lazy').forEach(img => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', () => img.classList.add('loaded'));
+    }
+  });
+
+  // ===== PAGE LOADER CLEANUP =====
+  const pageLoader = document.querySelector('.page-loader');
+  if (pageLoader) {
+    setTimeout(() => pageLoader.remove(), 1000);
+  }
+
+  // ===== BOARD MEMBER CARD DATA-ROLE ATTRIBUTE =====
+  document.querySelectorAll('.leader-card:not(.leader-card--full)').forEach(card => {
+    const title = card.querySelector('.leader-title');
+    if (title) card.setAttribute('data-role', title.textContent);
+  });
+
 });
