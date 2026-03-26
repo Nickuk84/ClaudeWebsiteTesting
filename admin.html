@@ -12,85 +12,144 @@
   <style>
     :root {
       --orange: #e8772e;
+      --orange-light: rgba(232,119,46,0.08);
+      --orange-border: rgba(232,119,46,0.2);
       --charcoal: #1a1a2e;
+      --gray-50: #f9fafb;
       --gray-100: #f3f4f6;
       --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
       --gray-400: #9ca3af;
-      --gray-600: #6b7280;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
       --white: #fff;
+      --green: #10b981;
+      --green-bg: rgba(16,185,129,0.08);
+      --red: #ef4444;
+      --red-bg: rgba(239,68,68,0.08);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59,130,246,0.08);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--charcoal); min-height: 100vh; }
 
+    /* ===== HEADER ===== */
     .admin-header {
       background: var(--charcoal);
-      padding: 16px 32px;
+      padding: 14px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .admin-header h1 {
       font-family: 'Space Grotesk', sans-serif;
       color: var(--white);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       display: flex;
       align-items: center;
       gap: 10px;
     }
     .admin-header h1 span { color: var(--orange); }
-    .admin-header a { color: var(--orange); font-size: 0.85rem; text-decoration: none; }
-    .admin-header a:hover { text-decoration: underline; }
+    .admin-header-actions { display: flex; align-items: center; gap: 12px; }
+    .admin-header a { color: var(--gray-400); font-size: 0.8rem; text-decoration: none; transition: color 0.2s; }
+    .admin-header a:hover { color: var(--white); }
+    .publish-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--gray-400);
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+    }
+    .publish-status .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    .publish-status.pending .dot { background: var(--orange); }
+    .publish-status.error .dot { background: var(--red); }
 
+    /* ===== NAV ===== */
     .admin-nav {
       background: var(--white);
       border-bottom: 1px solid var(--gray-200);
       padding: 0 32px;
       display: flex;
       gap: 0;
+      overflow-x: auto;
     }
     .admin-nav button {
       background: none;
       border: none;
       padding: 14px 20px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-family: 'Inter', sans-serif;
-      color: var(--gray-600);
+      color: var(--gray-500);
       cursor: pointer;
       border-bottom: 2px solid transparent;
       transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .admin-nav button.active { color: var(--orange); border-bottom-color: var(--orange); font-weight: 600; }
     .admin-nav button:hover { color: var(--charcoal); }
+    .admin-nav .badge {
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
 
-    .admin-content { max-width: 900px; margin: 32px auto; padding: 0 32px; }
+    /* ===== CONTENT ===== */
+    .admin-content { max-width: 960px; margin: 28px auto; padding: 0 32px; }
 
     .admin-panel { display: none; }
-    .admin-panel.active { display: block; }
+    .admin-panel.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* ===== CARDS ===== */
     .admin-card {
       background: var(--white);
       border-radius: 12px;
       border: 1px solid var(--gray-200);
       padding: 28px;
       margin-bottom: 20px;
+      transition: box-shadow 0.2s;
     }
+    .admin-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
     .admin-card h3 {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1.05rem;
       margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+    .admin-card h3 .icon { font-size: 1.1rem; }
     .admin-card p.desc {
-      color: var(--gray-600);
-      font-size: 0.85rem;
+      color: var(--gray-500);
+      font-size: 0.82rem;
       margin-bottom: 20px;
+      line-height: 1.5;
     }
 
+    /* ===== FORM ===== */
     .form-group { margin-bottom: 16px; }
     .form-group label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--gray-600);
+      color: var(--gray-500);
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 6px;
@@ -100,76 +159,129 @@
       padding: 10px 14px;
       border: 1px solid var(--gray-200);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-family: 'Inter', sans-serif;
       color: var(--charcoal);
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--white);
     }
     .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
       outline: none;
       border-color: var(--orange);
+      box-shadow: 0 0 0 3px var(--orange-light);
     }
     .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-group small { display: block; margin-top: 4px; color: var(--gray-400); font-size: 0.72rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group input[type="password"] { font-family: monospace; letter-spacing: 1px; }
 
+    /* ===== BUTTONS ===== */
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 10px 20px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       font-family: 'Inter', sans-serif;
       cursor: pointer;
       border: none;
       transition: all 0.2s;
     }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: var(--orange); color: #fff; }
-    .btn-primary:hover { background: #d06a28; }
+    .btn-primary:hover:not(:disabled) { background: #d06a28; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,119,46,0.3); }
+    .btn-success { background: var(--green); color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #059669; }
     .btn-outline { background: none; border: 1px solid var(--gray-200); color: var(--gray-600); }
-    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
-    .btn-danger { background: #ef4444; color: #fff; }
-    .btn-danger:hover { background: #dc2626; }
+    .btn-outline:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #dc2626; }
+    .btn-ghost { background: none; border: none; color: var(--gray-400); padding: 6px 10px; }
+    .btn-ghost:hover { color: var(--orange); }
+    .btn-lg { padding: 14px 28px; font-size: 0.95rem; border-radius: 10px; }
+    .btn-group { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
 
-    .btn-group { display: flex; gap: 8px; margin-top: 20px; }
-
-    .item-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    /* ===== ITEM LIST ===== */
+    .item-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
     .item-row {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 14px 18px;
-      background: var(--gray-100);
+      gap: 14px;
+      padding: 12px 16px;
+      background: var(--gray-50);
       border-radius: 10px;
       border: 1px solid transparent;
       transition: all 0.2s;
     }
-    .item-row:hover { border-color: var(--gray-200); }
-    .item-row .item-info { flex: 1; }
-    .item-row .item-info strong { font-size: 0.9rem; display: block; }
-    .item-row .item-info span { font-size: 0.8rem; color: var(--gray-400); }
-    .item-row .item-actions { display: flex; gap: 6px; }
+    .item-row:hover { border-color: var(--gray-200); background: var(--white); }
+    .item-row .item-thumb {
+      width: 48px; height: 36px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: var(--gray-200);
+    }
+    .item-row .item-avatar {
+      width: 40px; height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .item-row .item-avatar-placeholder {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--orange-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+    .item-row .item-info { flex: 1; min-width: 0; }
+    .item-row .item-info strong { font-size: 0.85rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-row .item-info span { font-size: 0.75rem; color: var(--gray-400); }
+    .item-row .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
     .item-row .item-actions button {
       background: none;
       border: 1px solid var(--gray-200);
       border-radius: 6px;
       padding: 5px 10px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       cursor: pointer;
-      color: var(--gray-600);
+      color: var(--gray-500);
       font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
     }
     .item-row .item-actions button:hover { border-color: var(--orange); color: var(--orange); }
-    .item-row .item-actions button.delete:hover { border-color: #ef4444; color: #ef4444; }
+    .item-row .item-actions button.delete:hover { border-color: var(--red); color: var(--red); }
 
+    /* ===== HELP TEXT ===== */
+    .help-text {
+      background: var(--orange-light);
+      border: 1px solid var(--orange-border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.82rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+    .help-text strong { color: var(--charcoal); }
+    .help-text.info { background: var(--blue-bg); border-color: rgba(59,130,246,0.2); }
+    .help-text.success { background: var(--green-bg); border-color: rgba(16,185,129,0.2); }
+
+    /* ===== OUTPUT AREA ===== */
     .output-area {
       background: var(--charcoal);
       color: #a5f3fc;
       border-radius: 10px;
       padding: 20px;
       font-family: 'Courier New', monospace;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       white-space: pre-wrap;
       word-break: break-all;
       max-height: 400px;
@@ -177,6 +289,7 @@
       margin-top: 16px;
     }
 
+    /* ===== TOAST ===== */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -185,56 +298,224 @@
       color: #fff;
       padding: 12px 20px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       display: none;
       z-index: 9999;
       box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      animation: slideUp 0.3s ease;
     }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } }
     .toast.show { display: flex; align-items: center; gap: 8px; }
-    .toast.success { border-left: 3px solid #10b981; }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--red); }
 
-    .help-text {
-      background: rgba(232,119,46,0.08);
-      border: 1px solid rgba(232,119,46,0.2);
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      font-size: 0.85rem;
-      color: var(--gray-600);
-      line-height: 1.6;
+    /* ===== PUBLISH PANEL ===== */
+    .publish-hero {
+      text-align: center;
+      padding: 40px 20px;
     }
-    .help-text strong { color: var(--charcoal); }
+    .publish-hero h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .publish-hero p { color: var(--gray-500); max-width: 500px; margin: 0 auto; }
+
+    .publish-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 28px 0;
+    }
+    .publish-step {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .publish-step.active { border-color: var(--orange); box-shadow: 0 4px 20px rgba(232,119,46,0.1); }
+    .publish-step.done { border-color: var(--green); background: var(--green-bg); }
+    .publish-step .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-500);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+    .publish-step.active .step-num { background: var(--orange); color: #fff; }
+    .publish-step.done .step-num { background: var(--green); color: #fff; }
+    .publish-step h4 { font-size: 0.9rem; margin-bottom: 4px; }
+    .publish-step p { font-size: 0.75rem; color: var(--gray-400); }
+
+    .publish-log {
+      background: var(--charcoal);
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--gray-400);
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+    .publish-log .log-line { margin-bottom: 4px; }
+    .publish-log .log-ok { color: var(--green); }
+    .publish-log .log-err { color: var(--red); }
+    .publish-log .log-info { color: #60a5fa; }
+
+    /* ===== PREVIEW PANEL ===== */
+    .preview-frame-wrap {
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--white);
+    }
+    .preview-toolbar {
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .preview-toolbar .dots { display: flex; gap: 5px; }
+    .preview-toolbar .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .preview-toolbar .dots span:nth-child(1) { background: #ef4444; }
+    .preview-toolbar .dots span:nth-child(2) { background: #f59e0b; }
+    .preview-toolbar .dots span:nth-child(3) { background: #10b981; }
+    .preview-toolbar .url-bar {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      color: var(--gray-400);
+    }
+    .preview-frame {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+
+    /* ===== QUICK GUIDE ===== */
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .guide-card {
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid var(--gray-200);
+    }
+    .guide-card h4 {
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .guide-card p { font-size: 0.78rem; color: var(--gray-500); line-height: 1.5; }
+    .guide-card ol, .guide-card ul { font-size: 0.78rem; color: var(--gray-500); padding-left: 18px; line-height: 1.8; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .admin-header { padding: 12px 16px; }
+      .admin-nav { padding: 0 16px; }
+      .admin-content { padding: 0 16px; margin: 16px auto; }
+      .form-row { grid-template-columns: 1fr; }
+      .publish-steps { grid-template-columns: 1fr; }
+      .guide-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- HEADER -->
   <div class="admin-header">
     <h1>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#e8772e" stroke-width="2" width="22" height="22"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-      <span>AEGIS London</span> Content Manager
+      <svg viewBox="0 0 24 24" fill="none" stroke="#e8772e" stroke-width="2" width="20" height="20"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span>AEGIS</span> Content Manager
     </h1>
-    <a href="index.html">&larr; Back to Website</a>
+    <div class="admin-header-actions">
+      <div class="publish-status" id="publishStatus">
+        <span class="dot"></span>
+        <span id="publishStatusText">All changes saved</span>
+      </div>
+      <a href="index.html">View Website &rarr;</a>
+    </div>
   </div>
 
+  <!-- NAV -->
   <div class="admin-nav">
-    <button class="active" data-panel="news">News &amp; Press</button>
-    <button data-panel="careers">Careers</button>
-    <button data-panel="team">Team</button>
-    <button data-panel="config">Site Config</button>
-    <button data-panel="export">Export</button>
+    <button class="active" data-panel="dashboard">&#127968; Dashboard</button>
+    <button data-panel="news">&#128240; News</button>
+    <button data-panel="team">&#128101; Team</button>
+    <button data-panel="careers">&#128188; Careers</button>
+    <button data-panel="config">&#9881; Settings</button>
+    <button data-panel="publish">&#128640; Publish</button>
+    <button data-panel="preview">&#128064; Preview</button>
   </div>
 
   <div class="admin-content">
 
-    <!-- NEWS PANEL -->
-    <div class="admin-panel active" id="panel-news">
+    <!-- ============ DASHBOARD ============ -->
+    <div class="admin-panel active" id="panel-dashboard">
+      <div class="publish-hero">
+        <h2>Welcome to the CMS</h2>
+        <p>Manage your website content and publish changes directly to your live site — no coding required.</p>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h4>&#128221; Edit Content</h4>
+          <p>Use the <strong>News</strong>, <strong>Team</strong>, and <strong>Careers</strong> tabs to add, edit, or remove content. Changes save automatically to your browser.</p>
+        </div>
+        <div class="guide-card">
+          <h4>&#128064; Preview Changes</h4>
+          <p>Click the <strong>Preview</strong> tab to see how your site looks right now. Changes to config are reflected when you refresh the preview.</p>
+        </div>
+        <div class="guide-card">
+          <h4>&#128640; Publish to Live Site</h4>
+          <ol>
+            <li>Make your edits in the content tabs</li>
+            <li>Go to <strong>Publish</strong> tab</li>
+            <li>Connect your GitHub token (one time)</li>
+            <li>Click <strong>Publish Now</strong></li>
+            <li>Live site updates in ~60 seconds!</li>
+          </ol>
+        </div>
+        <div class="guide-card">
+          <h4>&#128190; Backup & Restore</h4>
+          <p>Use <strong>Settings &rarr; Export JSON</strong> to back up all your content. Import it later to restore or transfer to another browser.</p>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-top: 24px;">
+        <h3>&#128202; Content Summary</h3>
+        <p class="desc" id="dashboardSummary">Loading...</p>
+      </div>
+    </div>
+
+    <!-- ============ NEWS PANEL ============ -->
+    <div class="admin-panel" id="panel-news">
       <div class="help-text">
-        <strong>How it works:</strong> Add or edit news articles below. When you're done, go to the <strong>Export</strong> tab to generate the updated config code. Copy it into <code>js/config.js</code> to publish your changes.
+        <strong>Tip:</strong> Add articles with images and body content. Articles with body content will open in a popup modal on the website. Articles without body content will link externally.
       </div>
 
       <div class="admin-card">
-        <h3>Current Articles</h3>
-        <p class="desc">Manage your news and press release content.</p>
+        <h3><span class="icon">&#128240;</span> Articles</h3>
+        <p class="desc">Manage news and press release content.</p>
         <div class="item-list" id="newsList"></div>
         <button class="btn btn-primary" onclick="addNewsItem()">+ Add Article</button>
       </div>
@@ -266,22 +547,23 @@
         <div class="form-group">
           <label>Image URL</label>
           <input type="url" id="newsImageUrl" placeholder="https://aegislondon.co.uk/content/dam/...">
-          <small style="color:var(--gray-400);font-size:0.75rem;">Paste an image URL. Images from aegislondon.co.uk or any public URL.</small>
+          <small>Paste a public image URL. Used as the card thumbnail and modal hero image.</small>
         </div>
         <div class="form-group">
           <label>External Link (optional)</label>
           <input type="url" id="newsExternalUrl" placeholder="https://aegislondon.co.uk/about-us/press-releases/...">
+          <small>If set and no body content exists, "Read More" links here.</small>
         </div>
         <div class="form-group">
           <label>Full Article Body (HTML)</label>
           <div style="display:flex;gap:6px;margin-bottom:8px;">
-            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertTag('b')"><b>B</b></button>
-            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertTag('em')"><em>I</em></button>
-            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="wrapParagraph()">&#182; P</button>
-            <button type="button" class="btn btn-outline" style="padding:4px 10px;font-size:0.75rem;" onclick="insertList()">&#8226; List</button>
+            <button type="button" class="btn btn-ghost" style="border:1px solid var(--gray-200);padding:4px 10px;font-size:0.72rem;" onclick="insertTag('b')"><b>B</b></button>
+            <button type="button" class="btn btn-ghost" style="border:1px solid var(--gray-200);padding:4px 10px;font-size:0.72rem;" onclick="insertTag('em')"><em>I</em></button>
+            <button type="button" class="btn btn-ghost" style="border:1px solid var(--gray-200);padding:4px 10px;font-size:0.72rem;" onclick="wrapParagraph()">&#182; P</button>
+            <button type="button" class="btn btn-ghost" style="border:1px solid var(--gray-200);padding:4px 10px;font-size:0.72rem;" onclick="insertList()">&#8226; List</button>
           </div>
-          <textarea id="newsBody" placeholder="<p>Full article content here...</p>" style="min-height:160px;font-family:'Courier New',monospace;font-size:0.8rem;"></textarea>
-          <small style="color:var(--gray-400);font-size:0.75rem;">Use HTML tags: &lt;p&gt;, &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;, etc. This appears in the popup modal.</small>
+          <textarea id="newsBody" placeholder="<p>Full article content here...</p>" style="min-height:160px;font-family:'Courier New',monospace;font-size:0.78rem;"></textarea>
+          <small>Use HTML: &lt;p&gt;, &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;, etc. This appears in the popup modal on the site.</small>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="saveNewsItem()">Save Article</button>
@@ -290,15 +572,58 @@
       </div>
     </div>
 
-    <!-- CAREERS PANEL -->
-    <div class="admin-panel" id="panel-careers">
+    <!-- ============ TEAM PANEL ============ -->
+    <div class="admin-panel" id="panel-team">
       <div class="help-text">
-        <strong>How it works:</strong> Add or edit job listings below. Export updated config from the <strong>Export</strong> tab when ready.
+        <strong>Tip:</strong> Team members appear on the Management Team page and homepage leadership section. Add a photo URL and bio for the best presentation.
       </div>
 
       <div class="admin-card">
-        <h3>Job Listings</h3>
-        <p class="desc">Manage current vacancies.</p>
+        <h3><span class="icon">&#128101;</span> Management Team</h3>
+        <p class="desc">Edit team members displayed on the site.</p>
+        <div class="item-list" id="teamList"></div>
+        <button class="btn btn-primary" onclick="addTeamMember()">+ Add Team Member</button>
+      </div>
+
+      <div class="admin-card" id="teamForm" style="display:none;">
+        <h3 id="teamFormTitle">New Team Member</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="teamName" placeholder="e.g. Alex Powell">
+          </div>
+          <div class="form-group">
+            <label>Initials</label>
+            <input type="text" id="teamInitials" placeholder="e.g. AP" maxlength="3">
+            <small>Auto-generated from name if left blank.</small>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" id="teamTitle" placeholder="e.g. Chief Executive Officer">
+        </div>
+        <div class="form-group">
+          <label>Photo URL</label>
+          <input type="url" id="teamPhotoUrl" placeholder="https://aegislondon.co.uk/content/dam/aegis-london/exec-portraits/...">
+          <small>Paste a public URL to the person's headshot.</small>
+        </div>
+        <div class="form-group">
+          <label>Biography</label>
+          <textarea id="teamBio" placeholder="Brief biography..." style="min-height:100px;"></textarea>
+          <small>Appears on hover/click on the team page.</small>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="saveTeamMember()">Save Member</button>
+          <button class="btn btn-outline" onclick="cancelTeamEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CAREERS PANEL ============ -->
+    <div class="admin-panel" id="panel-careers">
+      <div class="admin-card">
+        <h3><span class="icon">&#128188;</span> Job Listings</h3>
+        <p class="desc">Manage current vacancies shown on the careers page.</p>
         <div class="item-list" id="careersList"></div>
         <button class="btn btn-primary" onclick="addCareerItem()">+ Add Position</button>
       </div>
@@ -334,54 +659,10 @@
       </div>
     </div>
 
-    <!-- TEAM PANEL -->
-    <div class="admin-panel" id="panel-team">
-      <div class="help-text">
-        <strong>How it works:</strong> Edit team member details below. Changes affect the Management Team page and homepage leadership section.
-      </div>
-
-      <div class="admin-card">
-        <h3>Management Team</h3>
-        <p class="desc">Edit team members displayed on the site.</p>
-        <div class="item-list" id="teamList"></div>
-        <button class="btn btn-primary" onclick="addTeamMember()">+ Add Team Member</button>
-      </div>
-
-      <div class="admin-card" id="teamForm" style="display:none;">
-        <h3 id="teamFormTitle">New Team Member</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="teamName" placeholder="e.g. Alex Powell">
-          </div>
-          <div class="form-group">
-            <label>Initials</label>
-            <input type="text" id="teamInitials" placeholder="e.g. AP" maxlength="3">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Job Title</label>
-          <input type="text" id="teamTitle" placeholder="e.g. Chief Executive Officer">
-        </div>
-        <div class="form-group">
-          <label>Photo URL</label>
-          <input type="url" id="teamPhotoUrl" placeholder="https://aegislondon.co.uk/content/dam/aegis-london/exec-portraits/...">
-        </div>
-        <div class="form-group">
-          <label>Bio</label>
-          <textarea id="teamBio" placeholder="Brief biography..." style="min-height:100px;"></textarea>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="saveTeamMember()">Save Member</button>
-          <button class="btn btn-outline" onclick="cancelTeamEdit()">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONFIG PANEL -->
+    <!-- ============ CONFIG PANEL ============ -->
     <div class="admin-panel" id="panel-config">
       <div class="admin-card">
-        <h3>Brand &amp; Contact</h3>
+        <h3><span class="icon">&#127912;</span> Brand & Contact</h3>
         <p class="desc">Edit core branding and contact information.</p>
         <div class="form-row">
           <div class="form-group">
@@ -410,8 +691,8 @@
       </div>
 
       <div class="admin-card">
-        <h3>Key Stats</h3>
-        <p class="desc">Update headline figures displayed across the site.</p>
+        <h3><span class="icon">&#128200;</span> Key Stats</h3>
+        <p class="desc">Headline figures displayed across the site.</p>
         <div class="form-row">
           <div class="form-group">
             <label>GWP (display)</label>
@@ -433,55 +714,107 @@
           </div>
         </div>
       </div>
+
+      <div class="admin-card">
+        <h3><span class="icon">&#128190;</span> Data Management</h3>
+        <p class="desc">Back up and restore your content.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="downloadJson()">&#11015; Download JSON Backup</button>
+          <button class="btn btn-outline" onclick="importFromJson()">&#11014; Import JSON</button>
+          <button class="btn btn-danger" onclick="clearLocalStorage()">&#128465; Clear All Saved Data</button>
+        </div>
+        <p id="saveStatus" style="font-size:0.75rem;color:var(--gray-400);margin-top:10px;"></p>
+      </div>
     </div>
 
-    <!-- EXPORT PANEL -->
-    <div class="admin-panel" id="panel-export">
-      <div class="help-text">
-        <strong>How to publish changes:</strong>
-        <ol style="margin-top: 8px; padding-left: 20px;">
-          <li>Make your changes in the tabs above</li>
-          <li>Click <strong>Generate Config</strong> below</li>
-          <li>Copy the generated code</li>
-          <li>Open <code>js/config.js</code> in a text editor</li>
-          <li>Replace the relevant sections with the new code</li>
-          <li>Save the file and refresh the website</li>
-        </ol>
+    <!-- ============ PUBLISH PANEL ============ -->
+    <div class="admin-panel" id="panel-publish">
+      <div class="publish-hero">
+        <h2>&#128640; Publish to Live Site</h2>
+        <p>Push your content changes directly to GitHub Pages. Your live site updates within 60 seconds.</p>
       </div>
 
-      <div class="admin-card">
-        <h3>Auto-Save Status</h3>
-        <p class="desc">Your changes are automatically saved to your browser. They persist across page reloads.</p>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="saveToLocalStorage()">Save Now</button>
-          <button class="btn btn-outline" onclick="clearLocalStorage()">Clear Saved Data</button>
-          <button class="btn btn-outline" onclick="importFromJson()">Import JSON</button>
+      <div class="publish-steps" id="publishSteps">
+        <div class="publish-step active" id="step1">
+          <div class="step-num">1</div>
+          <h4>Connect GitHub</h4>
+          <p>Enter your token once</p>
         </div>
-        <p id="saveStatus" style="font-size:0.8rem;color:var(--gray-400);margin-top:8px;"></p>
-      </div>
-
-      <div class="admin-card">
-        <h3>Generate Updated Config</h3>
-        <p class="desc">This generates the JavaScript configuration code based on your edits above.</p>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="generateExport('news')">Export News Config</button>
-          <button class="btn btn-primary" onclick="generateExport('careers')">Export Careers Config</button>
-          <button class="btn btn-primary" onclick="generateExport('team')">Export Team Config</button>
-          <button class="btn btn-outline" onclick="generateExport('all')">Export Full Config</button>
+        <div class="publish-step" id="step2">
+          <div class="step-num">2</div>
+          <h4>Review Changes</h4>
+          <p>See what will be published</p>
         </div>
-        <div class="output-area" id="exportOutput" style="display:none;"></div>
-        <div class="btn-group" id="copyBtnGroup" style="display:none;">
-          <button class="btn btn-outline" onclick="copyExport()">Copy to Clipboard</button>
-          <button class="btn btn-outline" onclick="downloadExport()">Download as File</button>
+        <div class="publish-step" id="step3">
+          <div class="step-num">3</div>
+          <h4>Publish</h4>
+          <p>Push to live site</p>
         </div>
       </div>
 
-      <div class="admin-card">
-        <h3>Export as JSON</h3>
-        <p class="desc">Download all content as a JSON file for backup or transfer to another instance.</p>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="downloadJson()">Download JSON</button>
+      <!-- Step 1: GitHub Connection -->
+      <div class="admin-card" id="githubConnect">
+        <h3><span class="icon">&#128279;</span> GitHub Connection</h3>
+        <p class="desc">Enter your GitHub Personal Access Token to enable publishing. This is stored only in your browser and never sent anywhere except GitHub's API.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GitHub Username / Org</label>
+            <input type="text" id="ghOwner" placeholder="Nickuk84" value="Nickuk84">
+          </div>
+          <div class="form-group">
+            <label>Repository Name</label>
+            <input type="text" id="ghRepo" placeholder="ClaudeWebsiteTesting" value="ClaudeWebsiteTesting">
+          </div>
         </div>
+        <div class="form-group">
+          <label>Personal Access Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <small>Create one at github.com/settings/tokens. Needs "repo" scope. Stored in your browser only.</small>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="testGitHubConnection()">&#128268; Test Connection</button>
+          <button class="btn btn-outline" onclick="saveGitHubConfig()">Save Settings</button>
+        </div>
+        <div id="ghConnectionResult" style="margin-top:12px;font-size:0.82rem;"></div>
+      </div>
+
+      <!-- Step 2: Review Changes -->
+      <div class="admin-card" id="publishReview">
+        <h3><span class="icon">&#128203;</span> Changes to Publish</h3>
+        <p class="desc">Review what will be updated on your live site.</p>
+        <div id="changesSummary" style="font-size:0.85rem;line-height:1.8;"></div>
+        <div class="btn-group">
+          <button class="btn btn-success btn-lg" onclick="publishToGitHub()" id="publishBtn">
+            &#128640; Publish Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Publish Log -->
+      <div class="admin-card" id="publishLogCard" style="display:none;">
+        <h3><span class="icon">&#128196;</span> Publish Log</h3>
+        <div class="publish-log" id="publishLog"></div>
+      </div>
+    </div>
+
+    <!-- ============ PREVIEW PANEL ============ -->
+    <div class="admin-panel" id="panel-preview">
+      <div class="admin-card" style="padding:0;overflow:hidden;">
+        <div class="preview-frame-wrap">
+          <div class="preview-toolbar">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <div class="url-bar" id="previewUrl">https://nickuk84.github.io/ClaudeWebsiteTesting/</div>
+            <button class="btn btn-ghost" onclick="refreshPreview()" style="font-size:0.75rem;">&#8635; Refresh</button>
+          </div>
+          <iframe class="preview-frame" id="previewFrame" src="" title="Site Preview"></iframe>
+        </div>
+      </div>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn btn-outline" onclick="loadPreview('index.html')">Home</button>
+        <button class="btn btn-outline" onclick="loadPreview('news.html')">News</button>
+        <button class="btn btn-outline" onclick="loadPreview('team.html')">Team</button>
+        <button class="btn btn-outline" onclick="loadPreview('about.html')">About</button>
+        <button class="btn btn-outline" onclick="loadPreview('careers.html')">Careers</button>
       </div>
     </div>
 
@@ -489,27 +822,63 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- Scroll Progress -->
-  <div class="scroll-progress" id="scrollProgress"></div>
-
-  <!-- Page Loader -->
-  <div class="page-loader"></div>
-
   <script src="js/config.js"></script>
   <script>
-    // ===== STATE (load from localStorage first, fallback to config.js) =====
+    // ===================================================================
+    //  AEGIS LONDON — CMS ENGINE
+    // ===================================================================
+
+    // ===== STATE =====
     const C = window.SITE_CONFIG || {};
     const saved = JSON.parse(localStorage.getItem('aegis-admin') || 'null');
     let newsItems = saved?.news || [...(C.news || [])];
     let careerItems = saved?.careers || [...(C.careers || [])];
     let teamItems = saved?.team || [...(C.team || [])];
     let editingIndex = -1;
+    let pendingChanges = false;
 
-    // Auto-save on every change
+    // Load GitHub config from localStorage
+    const ghSaved = JSON.parse(localStorage.getItem('aegis-gh') || 'null');
+    if (ghSaved) {
+      document.getElementById('ghOwner').value = ghSaved.owner || 'Nickuk84';
+      document.getElementById('ghRepo').value = ghSaved.repo || 'ClaudeWebsiteTesting';
+      document.getElementById('ghToken').value = ghSaved.token || '';
+    }
+
+    // ===== AUTO-SAVE =====
     function autoSave() {
-      localStorage.setItem('aegis-admin', JSON.stringify({ news: newsItems, careers: careerItems, team: teamItems }));
+      localStorage.setItem('aegis-admin', JSON.stringify({
+        news: newsItems,
+        careers: careerItems,
+        team: teamItems,
+        config: getConfigValues()
+      }));
+      pendingChanges = true;
+      updatePublishStatus('pending', 'Unpublished changes');
+      updateDashboard();
       const status = document.getElementById('saveStatus');
-      if (status) status.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
+      if (status) status.textContent = 'Auto-saved: ' + new Date().toLocaleTimeString();
+    }
+
+    function getConfigValues() {
+      return {
+        name: document.getElementById('cfgName')?.value || '',
+        tagline: document.getElementById('cfgTagline')?.value || '',
+        phone: document.getElementById('cfgPhone')?.value || '',
+        email: document.getElementById('cfgEmail')?.value || '',
+        linkedIn: document.getElementById('cfgLinkedIn')?.value || '',
+        gwp: document.getElementById('cfgGwp')?.value || '',
+        profit: document.getElementById('cfgProfit')?.value || '',
+        ratio: document.getElementById('cfgRatio')?.value || '',
+        copyright: document.getElementById('cfgCopyright')?.value || '',
+      };
+    }
+
+    // ===== PUBLISH STATUS =====
+    function updatePublishStatus(state, text) {
+      const el = document.getElementById('publishStatus');
+      el.className = 'publish-status ' + state;
+      document.getElementById('publishStatusText').textContent = text;
     }
 
     // ===== TABS =====
@@ -518,31 +887,56 @@
         document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+        const panel = document.getElementById('panel-' + btn.dataset.panel);
+        panel.classList.add('active');
+
+        // Auto-load preview when switching to preview tab
+        if (btn.dataset.panel === 'preview') {
+          const frame = document.getElementById('previewFrame');
+          if (!frame.src || frame.src === 'about:blank' || frame.src === window.location.href) {
+            loadPreview('index.html');
+          }
+        }
+        // Update changes summary when switching to publish tab
+        if (btn.dataset.panel === 'publish') {
+          updateChangesSummary();
+        }
       });
     });
 
     // ===== TOAST =====
-    function showToast(msg) {
+    function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = 'toast show success';
-      setTimeout(() => t.className = 'toast', 2500);
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.className = 'toast', 3000);
     }
 
-    // ===== NEWS =====
+    // ===== DASHBOARD =====
+    function updateDashboard() {
+      const el = document.getElementById('dashboardSummary');
+      if (!el) return;
+      el.innerHTML = `
+        <strong>${newsItems.length}</strong> news articles &nbsp;&middot;&nbsp;
+        <strong>${teamItems.length}</strong> team members &nbsp;&middot;&nbsp;
+        <strong>${careerItems.length}</strong> job listings
+        ${pendingChanges ? '<br><span style="color:var(--orange);font-weight:600;">&#9679; You have unpublished changes</span>' : '<br><span style="color:var(--green);">&#10003; All changes published</span>'}
+      `;
+    }
+
+    // ===== NEWS CRUD =====
     function renderNews() {
       const list = document.getElementById('newsList');
       if (newsItems.length === 0) {
-        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No articles yet.</p>';
+        list.innerHTML = '<p style="color:var(--gray-400);font-size:0.82rem;">No articles yet. Click "Add Article" to get started.</p>';
         return;
       }
       list.innerHTML = newsItems.map((item, i) => `
         <div class="item-row">
-          ${item.imageUrl ? '<img src="' + item.imageUrl + '" style="width:48px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;" alt="">' : ''}
+          ${item.imageUrl ? '<img class="item-thumb" src="' + item.imageUrl + '" alt="">' : ''}
           <div class="item-info">
             <strong>${item.title}</strong>
-            <span>${item.date} &middot; ${item.category}${item.body ? ' &middot; Has body content' : ''}</span>
+            <span>${item.date || 'No date'} &middot; ${item.category || 'press'}${item.body ? ' &middot; &#128196; Has body' : ''}${item.externalUrl ? ' &middot; &#128279; Has link' : ''}</span>
           </div>
           <div class="item-actions">
             <button onclick="editNewsItem(${i})">Edit</button>
@@ -554,27 +948,24 @@
     function addNewsItem() {
       editingIndex = -1;
       document.getElementById('newsFormTitle').textContent = 'New Article';
-      document.getElementById('newsTitle').value = '';
-      document.getElementById('newsSummary').value = '';
-      document.getElementById('newsDate').value = '';
+      ['newsTitle','newsSummary','newsDate','newsImageUrl','newsExternalUrl','newsBody'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('newsCategory').value = 'press';
-      document.getElementById('newsImageUrl').value = '';
-      document.getElementById('newsExternalUrl').value = '';
-      document.getElementById('newsBody').value = '';
       document.getElementById('newsForm').style.display = '';
+      document.getElementById('newsForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     function editNewsItem(i) {
       editingIndex = i;
       const item = newsItems[i];
       document.getElementById('newsFormTitle').textContent = 'Edit Article';
-      document.getElementById('newsTitle').value = item.title;
-      document.getElementById('newsSummary').value = item.summary;
-      document.getElementById('newsDate').value = item.date;
-      document.getElementById('newsCategory').value = item.category;
+      document.getElementById('newsTitle').value = item.title || '';
+      document.getElementById('newsSummary').value = item.summary || '';
+      document.getElementById('newsDate').value = item.date || '';
+      document.getElementById('newsCategory').value = item.category || 'press';
       document.getElementById('newsImageUrl').value = item.imageUrl || '';
       document.getElementById('newsExternalUrl').value = item.externalUrl || '';
       document.getElementById('newsBody').value = item.body || '';
       document.getElementById('newsForm').style.display = '';
+      document.getElementById('newsForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     function saveNewsItem() {
       const item = {
@@ -593,6 +984,16 @@
       autoSave();
       showToast('Article saved');
     }
+    function deleteNewsItem(i) {
+      if (confirm('Delete "' + newsItems[i].title + '"?')) {
+        newsItems.splice(i, 1);
+        renderNews();
+        autoSave();
+        showToast('Article deleted');
+      }
+    }
+    function cancelNewsEdit() { document.getElementById('newsForm').style.display = 'none'; }
+
     // Rich text helpers
     function insertTag(tag) {
       const ta = document.getElementById('newsBody');
@@ -613,21 +1014,80 @@
       ta.value += '\n<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n</ul>\n';
       ta.focus();
     }
-    function deleteNewsItem(i) {
-      if (confirm('Delete "' + newsItems[i].title + '"?')) {
-        newsItems.splice(i, 1);
-        renderNews();
+
+    // ===== TEAM CRUD =====
+    function renderTeam() {
+      const list = document.getElementById('teamList');
+      if (teamItems.length === 0) {
+        list.innerHTML = '<p style="color:var(--gray-400);font-size:0.82rem;">No team members yet.</p>';
+        return;
+      }
+      list.innerHTML = teamItems.map((item, i) => `
+        <div class="item-row">
+          ${item.photoUrl
+            ? '<img class="item-avatar" src="' + item.photoUrl + '" alt="">'
+            : '<div class="item-avatar-placeholder">' + (item.initials || '?') + '</div>'}
+          <div class="item-info">
+            <strong>${item.name}</strong>
+            <span>${item.title}${item.bio ? ' &middot; Has bio' : ''}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick="editTeamMember(${i})">Edit</button>
+            <button class="delete" onclick="deleteTeamMember(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function addTeamMember() {
+      editingIndex = -1;
+      document.getElementById('teamFormTitle').textContent = 'New Team Member';
+      ['teamName','teamInitials','teamTitle','teamPhotoUrl','teamBio'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('teamForm').style.display = '';
+      document.getElementById('teamForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function editTeamMember(i) {
+      editingIndex = i;
+      const item = teamItems[i];
+      document.getElementById('teamFormTitle').textContent = 'Edit Team Member';
+      document.getElementById('teamName').value = item.name || '';
+      document.getElementById('teamInitials').value = item.initials || '';
+      document.getElementById('teamTitle').value = item.title || '';
+      document.getElementById('teamPhotoUrl').value = item.photoUrl || '';
+      document.getElementById('teamBio').value = item.bio || '';
+      document.getElementById('teamForm').style.display = '';
+      document.getElementById('teamForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function saveTeamMember() {
+      const item = {
+        name: document.getElementById('teamName').value,
+        initials: document.getElementById('teamInitials').value,
+        title: document.getElementById('teamTitle').value,
+        photoUrl: document.getElementById('teamPhotoUrl').value,
+        bio: document.getElementById('teamBio').value,
+      };
+      if (!item.name) { alert('Name is required'); return; }
+      if (!item.initials) item.initials = item.name.split(' ').map(w => w[0]).join('').toUpperCase();
+      if (editingIndex >= 0) { teamItems[editingIndex] = item; } else { teamItems.push(item); }
+      document.getElementById('teamForm').style.display = 'none';
+      renderTeam();
+      autoSave();
+      showToast('Team member saved');
+    }
+    function deleteTeamMember(i) {
+      if (confirm('Remove "' + teamItems[i].name + '"?')) {
+        teamItems.splice(i, 1);
+        renderTeam();
         autoSave();
-        showToast('Article deleted');
+        showToast('Team member removed');
       }
     }
-    function cancelNewsEdit() { document.getElementById('newsForm').style.display = 'none'; }
+    function cancelTeamEdit() { document.getElementById('teamForm').style.display = 'none'; }
 
-    // ===== CAREERS =====
+    // ===== CAREERS CRUD =====
     function renderCareers() {
       const list = document.getElementById('careersList');
       if (careerItems.length === 0) {
-        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No positions listed.</p>';
+        list.innerHTML = '<p style="color:var(--gray-400);font-size:0.82rem;">No positions listed.</p>';
         return;
       }
       list.innerHTML = careerItems.map((item, i) => `
@@ -686,154 +1146,25 @@
     }
     function cancelCareerEdit() { document.getElementById('careerForm').style.display = 'none'; }
 
-    // ===== TEAM =====
-    function renderTeam() {
-      const list = document.getElementById('teamList');
-      if (teamItems.length === 0) {
-        list.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;">No team members.</p>';
-        return;
-      }
-      list.innerHTML = teamItems.map((item, i) => `
-        <div class="item-row">
-          ${item.photoUrl ? '<img src="' + item.photoUrl + '" style="width:40px;height:40px;object-fit:cover;border-radius:50%;flex-shrink:0;" alt="">' : '<div style="width:40px;height:40px;border-radius:50%;background:rgba(232,119,46,0.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:#e8772e;flex-shrink:0;">' + item.initials + '</div>'}
-          <div class="item-info">
-            <strong>${item.name}</strong>
-            <span>${item.title}${item.bio ? ' &middot; Has bio' : ''}</span>
-          </div>
-          <div class="item-actions">
-            <button onclick="editTeamMember(${i})">Edit</button>
-            <button class="delete" onclick="deleteTeamMember(${i})">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-    function addTeamMember() {
-      editingIndex = -1;
-      document.getElementById('teamFormTitle').textContent = 'New Team Member';
-      document.getElementById('teamName').value = '';
-      document.getElementById('teamInitials').value = '';
-      document.getElementById('teamTitle').value = '';
-      document.getElementById('teamPhotoUrl').value = '';
-      document.getElementById('teamBio').value = '';
-      document.getElementById('teamForm').style.display = '';
-    }
-    function editTeamMember(i) {
-      editingIndex = i;
-      const item = teamItems[i];
-      document.getElementById('teamFormTitle').textContent = 'Edit Team Member';
-      document.getElementById('teamName').value = item.name;
-      document.getElementById('teamInitials').value = item.initials;
-      document.getElementById('teamTitle').value = item.title;
-      document.getElementById('teamPhotoUrl').value = item.photoUrl || '';
-      document.getElementById('teamBio').value = item.bio || '';
-      document.getElementById('teamForm').style.display = '';
-    }
-    function saveTeamMember() {
-      const item = {
-        name: document.getElementById('teamName').value,
-        initials: document.getElementById('teamInitials').value,
-        title: document.getElementById('teamTitle').value,
-        photoUrl: document.getElementById('teamPhotoUrl').value,
-        bio: document.getElementById('teamBio').value,
-      };
-      if (!item.name) { alert('Name is required'); return; }
-      if (!item.initials) item.initials = item.name.split(' ').map(w => w[0]).join('').toUpperCase();
-      if (editingIndex >= 0) { teamItems[editingIndex] = item; } else { teamItems.push(item); }
-      document.getElementById('teamForm').style.display = 'none';
-      renderTeam();
-      autoSave();
-      showToast('Team member saved');
-    }
-    function deleteTeamMember(i) {
-      if (confirm('Remove "' + teamItems[i].name + '"?')) {
-        teamItems.splice(i, 1);
-        renderTeam();
-        autoSave();
-        showToast('Team member removed');
-      }
-    }
-    function cancelTeamEdit() { document.getElementById('teamForm').style.display = 'none'; }
-
     // ===== CONFIG FIELDS =====
     function loadConfig() {
-      document.getElementById('cfgName').value = C.brand?.name || '';
-      document.getElementById('cfgTagline').value = C.brand?.tagline || '';
-      document.getElementById('cfgPhone').value = C.contact?.phone || '';
-      document.getElementById('cfgEmail').value = C.contact?.email || '';
-      document.getElementById('cfgLinkedIn').value = C.brand?.linkedIn || '';
-      document.getElementById('cfgGwp').value = C.stats?.gwp || '';
-      document.getElementById('cfgProfit').value = C.stats?.profit || '';
-      document.getElementById('cfgRatio').value = C.stats?.combinedRatio || '';
-      document.getElementById('cfgCopyright').value = C.legal?.copyright || '';
-    }
-
-    // ===== EXPORT =====
-    function generateExport(section) {
-      const output = document.getElementById('exportOutput');
-      const copyBtn = document.getElementById('copyBtnGroup');
-      let code = '';
-
-      if (section === 'news' || section === 'all') {
-        code += '  // NEWS\n  news: [\n';
-        code += newsItems.map(n => {
-          let fields = `      title:       "${n.title}",\n      summary:     "${n.summary}",\n      date:        "${n.date}",\n      category:    "${n.category}",`;
-          if (n.imageUrl) fields += `\n      imageUrl:    "${n.imageUrl}",`;
-          if (n.externalUrl) fields += `\n      externalUrl: "${n.externalUrl}",`;
-          if (n.body) fields += `\n      body:        ${JSON.stringify(n.body)},`;
-          return `    {\n${fields}\n    }`;
-        }).join(',\n');
-        code += '\n  ],\n\n';
-      }
-      if (section === 'careers' || section === 'all') {
-        code += '  // CAREERS\n  careers: [\n';
-        code += careerItems.map(c =>
-          `    { title: "${c.title}", location: "${c.location}", dept: "${c.dept}", type: "${c.type}" }`
-        ).join(',\n');
-        code += '\n  ],\n\n';
-      }
-      if (section === 'team' || section === 'all') {
-        code += '  // TEAM\n  team: [\n';
-        code += teamItems.map(t => {
-          let fields = `name: "${t.name}", initials: "${t.initials}", title: "${t.title}"`;
-          if (t.photoUrl) fields += `, photoUrl: "${t.photoUrl}"`;
-          if (t.bio) fields += `, bio: ${JSON.stringify(t.bio)}`;
-          return `    { ${fields} }`;
-        }).join(',\n');
-        code += '\n  ],\n\n';
-      }
-      if (section === 'all') {
-        code += `  // BRAND\n  brand: {\n    name: "${document.getElementById('cfgName').value}",\n    tagline: "${document.getElementById('cfgTagline').value}",\n    linkedIn: "${document.getElementById('cfgLinkedIn').value}",\n  },\n\n`;
-        code += `  // CONTACT\n  contact: {\n    phone: "${document.getElementById('cfgPhone').value}",\n    email: "${document.getElementById('cfgEmail').value}",\n  },\n\n`;
-        code += `  // STATS\n  stats: {\n    gwp: "${document.getElementById('cfgGwp').value}",\n    profit: "${document.getElementById('cfgProfit').value}",\n    combinedRatio: "${document.getElementById('cfgRatio').value}",\n  },\n`;
-      }
-
-      output.textContent = code;
-      output.style.display = '';
-      copyBtn.style.display = '';
-    }
-
-    function copyExport() {
-      const text = document.getElementById('exportOutput').textContent;
-      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
-    }
-    function downloadExport() {
-      const text = document.getElementById('exportOutput').textContent;
-      const blob = new Blob([text], { type: 'text/javascript' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'config-export.js';
-      a.click();
-      showToast('Download started');
+      const sc = saved?.config || {};
+      document.getElementById('cfgName').value = sc.name || C.brand?.name || '';
+      document.getElementById('cfgTagline').value = sc.tagline || C.brand?.tagline || '';
+      document.getElementById('cfgPhone').value = sc.phone || C.contact?.phone || '';
+      document.getElementById('cfgEmail').value = sc.email || C.contact?.email || '';
+      document.getElementById('cfgLinkedIn').value = sc.linkedIn || C.brand?.linkedIn || '';
+      document.getElementById('cfgGwp').value = sc.gwp || C.stats?.gwp || '';
+      document.getElementById('cfgProfit').value = sc.profit || C.stats?.profit || '';
+      document.getElementById('cfgRatio').value = sc.ratio || C.stats?.combinedRatio || '';
+      document.getElementById('cfgCopyright').value = sc.copyright || C.legal?.copyright || '';
     }
 
     // ===== LOCALSTORAGE =====
-    function saveToLocalStorage() {
-      autoSave();
-      showToast('All changes saved to browser');
-    }
     function clearLocalStorage() {
-      if (confirm('Clear all saved data? This will revert to the original config.')) {
+      if (confirm('Clear all saved data? This will revert to the original site config.')) {
         localStorage.removeItem('aegis-admin');
+        localStorage.removeItem('aegis-gh');
         location.reload();
       }
     }
@@ -862,28 +1193,403 @@
       input.click();
     }
     function downloadJson() {
-      const data = { news: newsItems, careers: careerItems, team: teamItems };
+      const data = { news: newsItems, careers: careerItems, team: teamItems, config: getConfigValues() };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'aegis-london-content-' + new Date().toISOString().split('T')[0] + '.json';
+      a.download = 'aegis-content-' + new Date().toISOString().split('T')[0] + '.json';
       a.click();
-      showToast('JSON download started');
+      showToast('JSON backup downloaded');
     }
 
-    // ===== UPDATE RENDER WITH IMAGES =====
-    // Override renderNews to show image thumbnails
-    const originalRenderNews = renderNews;
+    // ===== PREVIEW =====
+    function loadPreview(page) {
+      const ghOwner = document.getElementById('ghOwner').value || 'Nickuk84';
+      const ghRepo = document.getElementById('ghRepo').value || 'ClaudeWebsiteTesting';
+      const url = `https://${ghOwner.toLowerCase()}.github.io/${ghRepo}/${page}`;
+      document.getElementById('previewFrame').src = url;
+      document.getElementById('previewUrl').textContent = url;
+    }
+    function refreshPreview() {
+      const frame = document.getElementById('previewFrame');
+      if (frame.src && frame.src !== 'about:blank') {
+        frame.src = frame.src.split('?')[0] + '?t=' + Date.now();
+      }
+    }
+
+    // ===== GITHUB PUBLISHING =====
+    function saveGitHubConfig() {
+      const config = {
+        owner: document.getElementById('ghOwner').value,
+        repo: document.getElementById('ghRepo').value,
+        token: document.getElementById('ghToken').value,
+      };
+      localStorage.setItem('aegis-gh', JSON.stringify(config));
+      showToast('GitHub settings saved');
+    }
+
+    async function ghApi(path, options = {}) {
+      const token = document.getElementById('ghToken').value;
+      const owner = document.getElementById('ghOwner').value;
+      const repo = document.getElementById('ghRepo').value;
+      const url = `https://api.github.com/repos/${owner}/${repo}${path}`;
+      const resp = await fetch(url, {
+        ...options,
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+          ...(options.headers || {}),
+        }
+      });
+      return resp;
+    }
+
+    async function testGitHubConnection() {
+      const result = document.getElementById('ghConnectionResult');
+      result.innerHTML = '<span style="color:var(--gray-400);">Testing connection...</span>';
+      try {
+        const resp = await ghApi('');
+        if (resp.ok) {
+          const data = await resp.json();
+          result.innerHTML = `<span style="color:var(--green);">&#10003; Connected to <strong>${data.full_name}</strong> (${data.visibility})</span>`;
+          saveGitHubConfig();
+          // Mark step 1 done
+          document.getElementById('step1').className = 'publish-step done';
+          document.getElementById('step2').className = 'publish-step active';
+          updateChangesSummary();
+        } else {
+          const err = await resp.json();
+          result.innerHTML = `<span style="color:var(--red);">&#10007; Error: ${err.message || resp.status}</span>`;
+        }
+      } catch (e) {
+        result.innerHTML = `<span style="color:var(--red);">&#10007; Connection failed: ${e.message}</span>`;
+      }
+    }
+
+    function updateChangesSummary() {
+      const el = document.getElementById('changesSummary');
+      el.innerHTML = `
+        <div style="display:grid;gap:8px;">
+          <div style="padding:10px 14px;background:var(--gray-50);border-radius:8px;border-left:3px solid var(--orange);">
+            <strong>js/config.js</strong> — Site configuration file<br>
+            <span style="color:var(--gray-400);font-size:0.78rem;">${newsItems.length} news articles, ${teamItems.length} team members, ${careerItems.length} job listings, brand settings</span>
+          </div>
+        </div>
+        <p style="margin-top:12px;font-size:0.78rem;color:var(--gray-400);">
+          This will update <code>js/config.js</code> on your GitHub repository. The live site at GitHub Pages will update automatically within ~60 seconds.
+        </p>
+      `;
+    }
+
+    function generateConfigJS() {
+      const cfg = getConfigValues();
+      let js = `/* =============================================================================
+   AEGIS LONDON — Site Configuration
+   =============================================================================
+   Edit this file to customise the website content, branding, and settings.
+   Changes here will be automatically applied across all pages on load.
+   ============================================================================= */
+
+const SITE_CONFIG = {
+
+  // ─── BRAND ────────────────────────────────────────────────────────────────
+  brand: {
+    name:         ${JSON.stringify(cfg.name || C.brand?.name || 'AEGIS London')},
+    shortName:    "AEGIS",
+    tagline:      ${JSON.stringify(cfg.tagline || C.brand?.tagline || '')},
+    description:  "Specialist underwriting backed by the strength of the AEGIS mutual.",
+    syndicate:    "Syndicate 1225",
+    founded:      "1999",
+    logoSrc:      "images/aegis-london-logo.png",
+    faviconSrc:   "images/favicon.svg",
+    linkedIn:     ${JSON.stringify(cfg.linkedIn || C.brand?.linkedIn || '')},
+    website:      "https://aegislondon.co.uk",
+  },
+
+  // ─── COLOURS (CSS custom properties — override the defaults) ──────────────
+  colors: {
+    primary:      "#e8772e",
+    primaryLight: "#f09848",
+    charcoal:     "#1a1a2e",
+    navy:         "#16213e",
+    accentGold:   null,
+  },
+
+  // ─── CONTACT INFO ─────────────────────────────────────────────────────────
+  contact: {
+    phone:        ${JSON.stringify(cfg.phone || C.contact?.phone || '')},
+    phoneHref:    "tel:+442078567856",
+    email:        ${JSON.stringify(cfg.email || C.contact?.email || '')},
+    canadaEmail:  "BusinessPracticeGroupCanada@aegislondon.co.uk",
+  },
+
+  // ─── OFFICES ──────────────────────────────────────────────────────────────
+  offices: {
+    london: {
+      label:   "London Office",
+      role:    "Headquarters",
+      street:  "25 Fenchurch Avenue",
+      city:    "London EC3M 5AD",
+      country: "United Kingdom",
+    },
+    toronto: {
+      label:   "Toronto Office",
+      role:    "Canadian Operations",
+      street:  "79 Wellington Street West, 30th Floor",
+      city:    "Toronto, Ontario M5K 1N2",
+      country: "Canada",
+    },
+  },
+
+  // ─── KEY STATS ────────────────────────────────────────────────────────────
+  stats: {
+    gwp:            ${JSON.stringify(cfg.gwp || C.stats?.gwp || '$1.7B+')},
+    gwpValue:       1.7,
+    profit:         ${JSON.stringify(cfg.profit || C.stats?.profit || '$391M')},
+    profitValue:    391,
+    combinedRatio:  ${JSON.stringify(cfg.ratio || C.stats?.combinedRatio || '72.9%')},
+    combinedValue:  72.9,
+    specialistClasses: "20+",
+    classesValue:   20,
+    underwriters:   "150+",
+    underwritersValue: 150,
+    yearsExcellence: "25+",
+    yearsValue:     25,
+    lloydsRanking:  "Top Quartile",
+  },
+
+  // ─── RATINGS ──────────────────────────────────────────────────────────────
+  ratings: {
+    amBest:  { grade: "A+",  label: "A.M. Best",   detail: "Excellent (XV)" },
+    sp:      { grade: "AA-", label: "S\\u0026P Global",   detail: "Strong" },
+  },
+
+  // ─── MANAGEMENT TEAM ──────────────────────────────────────────────────────
+  team: [
+`;
+      js += teamItems.map(t => {
+        let fields = `name: ${JSON.stringify(t.name)}, initials: ${JSON.stringify(t.initials)}, title: ${JSON.stringify(t.title)}`;
+        if (t.photoUrl) fields += `, photoUrl: ${JSON.stringify(t.photoUrl)}`;
+        if (t.bio) fields += `, bio: ${JSON.stringify(t.bio)}`;
+        return `    { ${fields} }`;
+      }).join(',\n');
+
+      js += `
+  ],
+
+  // ─── CANADA ───────────────────────────────────────────────────────────────
+  canada: {
+    operatingSince:     "1999",
+    topQuartileYears:   7,
+    combinedRatio5yr:   "90.7%",
+    claimsOutstanding:  6,
+    territoryRank:      "2nd largest",
+    products: [
+      "Property", "Accident & Health", "General Liability",
+      "Professional Liability", "Marine & Cargo", "Terrorism", "Specialty"
+    ],
+    contacts: [
+      { name: "Stephen Merrick", role: "Leader, Canadian Business Practice Group" },
+      { name: "Carrie Trudeau",  role: "Head of Claims Operations" },
+      { name: "Danny Summa",     role: "Client Services Manager" },
+      { name: "Nazir Haji",      role: "SVP Business Development" },
+    ],
+  },
+
+  // ─── UNDERWRITING CLASSES ─────────────────────────────────────────────────
+  underwriting: {
+    property: [
+      { name: "Open Market Property",  desc: "Worldwide open market property risks including commercial, industrial, and residential exposures." },
+      { name: "Binders & Line Slips",  desc: "Delegated authority and consortium arrangements for property portfolios." },
+      { name: "Utility Property",      desc: "Specialist coverage for power generation, transmission, and distribution infrastructure." },
+    ],
+    casualty: [
+      { name: "US General Liability",     desc: "Primary and excess general liability for US-domiciled risks across diverse industry sectors." },
+      { name: "International Casualty",   desc: "Third-party liability coverage for non-US exposures across international markets." },
+      { name: "Professional Liability",   desc: "Errors & omissions and directors & officers liability for professional service firms." },
+      { name: "Energy Casualty",          desc: "Liability coverage for upstream and downstream energy operations worldwide." },
+      { name: "Marine Liability",         desc: "Protection & indemnity and marine liability for shipowners and operators." },
+    ],
+    specialty: [
+      { name: "Accident & Health",                desc: "Personal accident, travel, and health programmes through specialist partnerships." },
+      { name: "Political & Financial Risk",       desc: "Credit, political risk, and structured trade credit insurance solutions." },
+      { name: "Political Violence & Terrorism",   desc: "Coverage for terrorism, sabotage, and political violence worldwide." },
+      { name: "Cyber",                            desc: "Data breach, ransomware, business interruption, and privacy liability coverage." },
+      { name: "Marine Hull & War",                desc: "Hull, machinery, and war risks for ocean-going and coastal vessels." },
+      { name: "Cargo & Specie",                   desc: "Transit, storage, and exhibition coverage for goods and valuables." },
+      { name: "Energy Exploration & Production",  desc: "Physical damage coverage for upstream energy operations and installations." },
+    ],
+  },
+
+  // ─── NEWS / LATEST ARTICLES ───────────────────────────────────────────────
+  news: [
+`;
+      js += newsItems.map(n => {
+        let fields = `    title:    ${JSON.stringify(n.title)},\n`;
+        fields += `      summary:  ${JSON.stringify(n.summary)},\n`;
+        fields += `      date:     ${JSON.stringify(n.date)},\n`;
+        fields += `      category: ${JSON.stringify(n.category)}`;
+        if (n.imageUrl) fields += `,\n      imageUrl: ${JSON.stringify(n.imageUrl)}`;
+        if (n.externalUrl) fields += `,\n      externalUrl: ${JSON.stringify(n.externalUrl)}`;
+        if (n.body) fields += `,\n      body: ${JSON.stringify(n.body)}`;
+        return `    {\n  ${fields},\n    }`;
+      }).join(',\n');
+
+      js += `
+  ],
+
+  // ─── CAREERS — CURRENT VACANCIES ──────────────────────────────────────────
+  careers: [
+`;
+      js += careerItems.map(c =>
+        `    { title: ${JSON.stringify(c.title)}, location: ${JSON.stringify(c.location)}, dept: ${JSON.stringify(c.dept)}, type: ${JSON.stringify(c.type)} }`
+      ).join(',\n');
+
+      js += `
+  ],
+
+  // ─── FEATURE FLAGS ────────────────────────────────────────────────────────
+  features: {
+    showNewsTicker:   true,
+    showCookieBanner: true,
+    showBackToTop:    true,
+    enableAnimations: true,
+    enableCounters:   true,
+  },
+
+  // ─── LEGAL / COPYRIGHT ────────────────────────────────────────────────────
+  legal: {
+    copyright:  ${JSON.stringify(cfg.copyright || C.legal?.copyright || '')},
+    policies: [
+      { label: "Privacy Notice",     href: "privacy.html" },
+      { label: "Cookies Policy",     href: "cookies.html" },
+      { label: "Terms of Use",       href: "terms.html" },
+      { label: "Modern Slavery Act", href: "modern-slavery.html" },
+      { label: "UK Tax Strategy",    href: "tax-strategy.html" },
+      { label: "Diversity Policy",   href: "diversity.html" },
+    ],
+  },
+};
+
+// Make available globally
+if (typeof window !== 'undefined') {
+  window.SITE_CONFIG = SITE_CONFIG;
+}
+`;
+      return js;
+    }
+
+    // ===== PUBLISH LOG =====
+    function logPublish(msg, type = '') {
+      const log = document.getElementById('publishLog');
+      const line = document.createElement('div');
+      line.className = 'log-line' + (type ? ' log-' + type : '');
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ===== PUBLISH TO GITHUB =====
+    async function publishToGitHub() {
+      const token = document.getElementById('ghToken').value;
+      if (!token) {
+        showToast('Please enter your GitHub token first', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('publishBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Publishing...';
+
+      const logCard = document.getElementById('publishLogCard');
+      logCard.style.display = '';
+      document.getElementById('publishLog').innerHTML = '';
+
+      try {
+        // Step 1: Get current file SHA
+        logPublish('Fetching current config.js from GitHub...', 'info');
+        const getResp = await ghApi('/contents/js/config.js');
+
+        let sha = null;
+        if (getResp.ok) {
+          const fileData = await getResp.json();
+          sha = fileData.sha;
+          logPublish('Found existing config.js (SHA: ' + sha.substring(0, 7) + ')', 'ok');
+        } else if (getResp.status === 404) {
+          logPublish('config.js not found — will create new file', 'info');
+        } else {
+          throw new Error('Failed to fetch file: ' + getResp.status);
+        }
+
+        // Step 2: Generate new content
+        logPublish('Generating updated configuration...', 'info');
+        const newContent = generateConfigJS();
+        const encoded = btoa(unescape(encodeURIComponent(newContent)));
+        logPublish('Config generated (' + newContent.length + ' chars)', 'ok');
+
+        // Step 3: Push update
+        logPublish('Pushing to GitHub...', 'info');
+        const putBody = {
+          message: 'Update site content via CMS [' + new Date().toLocaleString() + ']',
+          content: encoded,
+          branch: 'main',
+        };
+        if (sha) putBody.sha = sha;
+
+        const putResp = await ghApi('/contents/js/config.js', {
+          method: 'PUT',
+          body: JSON.stringify(putBody),
+        });
+
+        if (putResp.ok) {
+          const result = await putResp.json();
+          logPublish('Successfully published! Commit: ' + result.commit.sha.substring(0, 7), 'ok');
+          logPublish('GitHub Pages will update within ~60 seconds.', 'ok');
+          logPublish('View commit: ' + result.commit.html_url, 'info');
+
+          // Update UI
+          document.getElementById('step2').className = 'publish-step done';
+          document.getElementById('step3').className = 'publish-step done';
+          pendingChanges = false;
+          updatePublishStatus('', 'Published just now');
+          updateDashboard();
+          showToast('Published successfully! Live site updating...');
+        } else {
+          const err = await putResp.json();
+          throw new Error(err.message || 'Push failed: ' + putResp.status);
+        }
+      } catch (e) {
+        logPublish('ERROR: ' + e.message, 'err');
+        showToast('Publish failed: ' + e.message, 'error');
+        updatePublishStatus('error', 'Publish failed');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '&#128640; Publish Now';
+      }
+    }
 
     // ===== INIT =====
     renderNews();
     renderCareers();
     renderTeam();
     loadConfig();
-    // Show save status if data exists
+    updateDashboard();
+
     if (saved) {
-      const status = document.getElementById('saveStatus');
-      if (status) status.textContent = 'Loaded from saved browser data.';
+      updatePublishStatus('pending', 'Unpublished changes');
+      pendingChanges = true;
+    }
+
+    // Auto-save config fields on change
+    document.querySelectorAll('#panel-config input').forEach(input => {
+      input.addEventListener('change', autoSave);
+    });
+
+    // Check if GitHub token already saved
+    if (ghSaved?.token) {
+      document.getElementById('step1').className = 'publish-step done';
+      document.getElementById('step2').className = 'publish-step active';
     }
   </script>
 </body>
