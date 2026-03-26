@@ -72,6 +72,10 @@ const SITE_CONFIG = {
     yearsExcellence: "25+",
     yearsValue:     25,
     lloydsRanking:  "Top Quartile",
+    digitalYear:       "2017",
+    digitalPlatforms:  "3",
+    digitalSpecialists:"12",
+    digitalAccess:     "24/7",
   },
 
   // ─── RATINGS ──────────────────────────────────────────────────────────────

@@ -693,7 +693,7 @@
 
       <div class="admin-card">
         <h3><span class="icon">&#128200;</span> Key Stats</h3>
-        <p class="desc">Headline figures displayed across the site.</p>
+        <p class="desc">Headline figures displayed across the homepage hero and about sections.</p>
         <div class="form-row">
           <div class="form-group">
             <label>GWP (display)</label>
@@ -710,9 +710,53 @@
             <input type="text" id="cfgRatio" placeholder="72.9%">
           </div>
           <div class="form-group">
-            <label>Copyright Text</label>
-            <input type="text" id="cfgCopyright" placeholder="&copy; 2026 AEGIS London. All rights reserved.">
+            <label>Years of Excellence</label>
+            <input type="text" id="cfgYears" placeholder="25+">
           </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Specialist Classes</label>
+            <input type="text" id="cfgClasses" placeholder="20+">
+          </div>
+          <div class="form-group">
+            <label>Underwriters</label>
+            <input type="text" id="cfgUnderwriters" placeholder="150+">
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3><span class="icon">&#128187;</span> Digital Trading Stats</h3>
+        <p class="desc">Figures shown in the Digital Trading section on the homepage.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Year Launched</label>
+            <input type="text" id="cfgDigitalYear" placeholder="2017">
+          </div>
+          <div class="form-group">
+            <label>Core Platforms</label>
+            <input type="text" id="cfgDigitalPlatforms" placeholder="3">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Specialists</label>
+            <input type="text" id="cfgDigitalSpecialists" placeholder="12">
+          </div>
+          <div class="form-group">
+            <label>Digital Access</label>
+            <input type="text" id="cfgDigitalAccess" placeholder="24/7">
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3><span class="icon">&#128196;</span> Legal & Copyright</h3>
+        <p class="desc">Footer copyright text.</p>
+        <div class="form-group">
+          <label>Copyright Text</label>
+          <input type="text" id="cfgCopyright" placeholder="&copy; 2026 AEGIS London. All rights reserved.">
         </div>
       </div>
 
@@ -871,6 +915,13 @@
         gwp: document.getElementById('cfgGwp')?.value || '',
         profit: document.getElementById('cfgProfit')?.value || '',
         ratio: document.getElementById('cfgRatio')?.value || '',
+        years: document.getElementById('cfgYears')?.value || '',
+        classes: document.getElementById('cfgClasses')?.value || '',
+        underwriters: document.getElementById('cfgUnderwriters')?.value || '',
+        digitalYear: document.getElementById('cfgDigitalYear')?.value || '',
+        digitalPlatforms: document.getElementById('cfgDigitalPlatforms')?.value || '',
+        digitalSpecialists: document.getElementById('cfgDigitalSpecialists')?.value || '',
+        digitalAccess: document.getElementById('cfgDigitalAccess')?.value || '',
         copyright: document.getElementById('cfgCopyright')?.value || '',
       };
     }
@@ -1158,6 +1209,13 @@
       document.getElementById('cfgGwp').value = sc.gwp || C.stats?.gwp || '';
       document.getElementById('cfgProfit').value = sc.profit || C.stats?.profit || '';
       document.getElementById('cfgRatio').value = sc.ratio || C.stats?.combinedRatio || '';
+      document.getElementById('cfgYears').value = sc.years || C.stats?.yearsExcellence || '';
+      document.getElementById('cfgClasses').value = sc.classes || C.stats?.specialistClasses || '';
+      document.getElementById('cfgUnderwriters').value = sc.underwriters || C.stats?.underwriters || '';
+      document.getElementById('cfgDigitalYear').value = sc.digitalYear || '2017';
+      document.getElementById('cfgDigitalPlatforms').value = sc.digitalPlatforms || '3';
+      document.getElementById('cfgDigitalSpecialists').value = sc.digitalSpecialists || '12';
+      document.getElementById('cfgDigitalAccess').value = sc.digitalAccess || '24/7';
       document.getElementById('cfgCopyright').value = sc.copyright || C.legal?.copyright || '';
     }
 
@@ -1351,11 +1409,11 @@ const SITE_CONFIG = {
     profitValue:    391,
     combinedRatio:  ${JSON.stringify(cfg.ratio || C.stats?.combinedRatio || '72.9%')},
     combinedValue:  72.9,
-    specialistClasses: "20+",
+    specialistClasses: ${JSON.stringify(cfg.classes || C.stats?.specialistClasses || '20+')},
     classesValue:   20,
-    underwriters:   "150+",
+    underwriters:   ${JSON.stringify(cfg.underwriters || C.stats?.underwriters || '150+')},
     underwritersValue: 150,
-    yearsExcellence: "25+",
+    yearsExcellence: ${JSON.stringify(cfg.years || C.stats?.yearsExcellence || '25+')},
     yearsValue:     25,
     lloydsRanking:  "Top Quartile",
   },
