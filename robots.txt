@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
 
-Sitemap: https://aegislondon.co.uk/sitemap.xml
+Sitemap: https://nickuk84.github.io/ClaudeWebsiteTesting/sitemap.xml
